@@ -9,71 +9,51 @@ import {
 } from 'react-native';
 import { Surface } from 'react-native-paper';
 import { setSpread } from '../../../redux/slices/hubSlice';
+import Quad from '../components/Quad';
 
 const HubScreen = ({ navigation }) => {
-	const { spread } = useSelector((state) => state.hub);
+	const { spread, nflFav, nbaFav, mlbFav, nhlFav } = useSelector(
+		(state) => state.hub
+	);
 	const dispatch = useDispatch();
 
 	console.log('Spread', spread);
 
 	return (
 		<View style={styles.canvas}>
-			<Surface style={styles.tl}>
+			<Surface style={spread ? [styles.tl, styles.tlSpread] : styles.tl}>
 				<Text>News</Text>
 			</Surface>
-			<Surface style={styles.tr}>
-				<Text>News</Text>
+			<Surface style={spread ? [styles.tr, styles.trSpread] : styles.tr}>
+				<Text>Stats</Text>
 			</Surface>
 			<Surface style={styles.surface}>
 				<View style={styles.head}>
 					<Text style={styles.headTxt}>Hub</Text>
 				</View>
 				<View style={styles.container}>
-					<TouchableOpacity
-						style={styles.quad}
+					<Quad
 						onPress={() => dispatch(setSpread())}
-					>
-						<ImageBackground
-							style={styles.img}
-							source={require('../../../../assets/nflBackground.jpg')}
-							resizeMode='cover'
-						>
-							<Surface style={styles.select}></Surface>
-						</ImageBackground>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.quad}>
-						<ImageBackground
-							style={styles.img}
-							source={require('../../../../assets/nbaBackground.jpg')}
-							resizeMode='cover'
-						>
-							<Surface style={styles.select}></Surface>
-						</ImageBackground>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.quad}>
-						<ImageBackground
-							style={styles.img}
-							source={require('../../../../assets/mlbBackground.jpg')}
-							resizeMode='cover'
-						>
-							<Surface style={styles.select}></Surface>
-						</ImageBackground>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.quad}>
-						<ImageBackground
-							style={styles.img}
-							source={require('../../../../assets/nhlBackground.jpg')}
-							resizeMode='cover'
-						>
-							<Surface style={styles.select}></Surface>
-						</ImageBackground>
-					</TouchableOpacity>
+						background={require('../../../../assets/nflBackground.jpg')}
+					/>
+					<Quad
+						onPress={() => dispatch(setSpread())}
+						background={require('../../../../assets/nbaBackground.jpg')}
+					/>
+					<Quad
+						onPress={() => dispatch(setSpread())}
+						background={require('../../../../assets/mlbBackground.jpg')}
+					/>
+					<Quad
+						onPress={() => dispatch(setSpread())}
+						background={require('../../../../assets/nhlBackground.jpg')}
+					/>
 				</View>
 			</Surface>
-			<Surface style={styles.bl}>
+			<Surface style={spread ? [styles.bl, styles.blSpread] : styles.bl}>
 				<Text>Players</Text>
 			</Surface>
-			<Surface style={styles.br}>
+			<Surface style={spread ? [styles.br, styles.brSpread] : styles.br}>
 				<Text>Standings</Text>
 			</Surface>
 			{/* <Text>HubScreen</Text>
@@ -110,20 +90,20 @@ const styles = StyleSheet.create({
 		height: '25%',
 		position: 'absolute',
 		zIndex: 0,
+		backgroundColor: 'green',
 	},
 	tlSpread: {
-		width: '50%',
-		height: '25%',
-		// transform: [{ translateY: 100 }],
+		transform: [{ translateX: -96 }, { translateY: -300 }],
 	},
 	tr: {
 		width: '50%',
 		height: '25%',
 		position: 'absolute',
 		zIndex: 0,
+		backgroundColor: 'red',
 	},
 	trSpread: {
-		// transform: translate('56%', '-56%'),
+		transform: [{ translateX: 96 }, { translateY: -300 }],
 	},
 	surface: {
 		width: '100%',
@@ -136,18 +116,20 @@ const styles = StyleSheet.create({
 		height: '25%',
 		position: 'absolute',
 		zIndex: 0,
+		backgroundColor: 'dodgerblue',
 	},
 	blSpread: {
-		// transform: translate('-56%', '56%'),
+		transform: [{ translateX: -96 }, { translateY: 300 }],
 	},
 	br: {
 		width: '50%',
 		height: '25%',
 		position: 'absolute',
 		zIndex: 0,
+		backgroundColor: 'indigo',
 	},
 	brSpread: {
-		// transform: translate('56%', '56%'),
+		transform: [{ translateX: 96 }, { translateY: 300 }],
 	},
 	head: {
 		width: '100%',
@@ -166,20 +148,5 @@ const styles = StyleSheet.create({
 		height: '90%',
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-	},
-	quad: {
-		width: '50%',
-		height: '50%',
-	},
-	img: {
-		width: '100%',
-		height: '100%',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	select: {
-		width: '80%',
-		height: 15,
-		borderRadius: 50,
 	},
 });
