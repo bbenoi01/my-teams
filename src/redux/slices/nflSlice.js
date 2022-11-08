@@ -29,19 +29,22 @@ export const nflSlice = createSlice({
 		errors: null,
 	},
 	reducers: {},
-	extraReducers: {
-		[getNFLTeams.pending]: (state) => {
-			state.loading = true;
-			state.errors = null;
-		},
-		[getNFLTeams.fulfilled]: (state, action) => {
-			state.loading = false;
-			state.nflTeams = action.payload;
-		},
-		[getNFLTeams.rejected]: (state, action) => {
-			state.loading = false;
-			state.errors = action.payload;
-		},
+	extraReducers: (builder) => {
+		builder
+			.addCase(getNFLTeams.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+
+			.addCase(getNFLTeams.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nflTeams = action.payload;
+			})
+
+			.addCase(getNFLTeams.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			});
 	},
 });
 

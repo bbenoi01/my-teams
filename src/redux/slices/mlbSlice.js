@@ -29,19 +29,22 @@ export const mlbSlice = createSlice({
 		errors: null,
 	},
 	reducers: {},
-	extraReducers: {
-		[getMLBTeams.pending]: (state) => {
-			state.loading = true;
-			state.errors = null;
-		},
-		[getMLBTeams.fulfilled]: (state, action) => {
-			state.loading = false;
-			state.mlbTeams = action.payload;
-		},
-		[getMLBTeams.rejected]: (state, action) => {
-			state.loading = false;
-			state.errors = action.payload;
-		},
+	extraReducers: (builder) => {
+		builder
+			.addCase(getMLBTeams.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+
+			.addCase(getMLBTeams.fulfilled, (state, action) => {
+				state.loading = false;
+				state.mlbTeams = action.payload;
+			})
+
+			.addCase(getMLBTeams.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			});
 	},
 });
 

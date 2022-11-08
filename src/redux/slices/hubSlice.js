@@ -4,6 +4,7 @@ export const hubSlice = createSlice({
 	name: 'hub',
 	initialState: {
 		loading: false,
+		spread: false,
 		sport: null,
 		nflFav: null,
 		nflFavKey: null,
@@ -19,6 +20,9 @@ export const hubSlice = createSlice({
 		standings: null,
 	},
 	reducers: {
+		setSpread: (state) => {
+			state.spread = !state.spread;
+		},
 		setSport: (state, action) => {
 			state.sport = action.payload;
 		},
@@ -39,10 +43,15 @@ export const hubSlice = createSlice({
 			state.nhlFavKey = action.payload.split(', ')[1];
 		},
 	},
-	extraReducers: {},
 });
 
-export const { setSport, setNFLFav, setNBAFav, setMLBFav, setNHLFav } =
-	hubSlice.actions;
+export const {
+	setSpread,
+	setSport,
+	setNFLFav,
+	setNBAFav,
+	setMLBFav,
+	setNHLFav,
+} = hubSlice.actions;
 
 export default hubSlice.reducer;

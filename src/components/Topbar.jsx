@@ -4,8 +4,8 @@ const Topbar = ({ navigation }) => {
 	return (
 		<Header
 			barStyle='light-content'
-			backgroundColor='#051625'
-			centerComponent={{ title: 'My Teams' }}
+			backgroundColor='#16161A'
+			centerComponent={{ text: 'My Teams', style: { color: '#94a1b2' } }}
 		/>
 	);
 };

@@ -30,19 +30,20 @@ export const nhlSlice = createSlice({
 		errors: null,
 	},
 	reducers: {},
-	extraReducers: {
-		[getNHLTeams.pending]: (state) => {
-			state.loading = true;
-			state.errors = null;
-		},
-		[getNHLTeams.fulfilled]: (state, action) => {
-			state.loading = false;
-			state.nhlTeams = action.payload;
-		},
-		[getNHLTeams.rejected]: (state, action) => {
-			state.loading = false;
-			state.errors = action.payload;
-		},
+	extraReducers: (builder) => {
+		builder
+			.addCase(getNHLTeams.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getNHLTeams.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nhlTeams = action.payload;
+			})
+			.addCase(getNHLTeams.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			});
 	},
 });
 
