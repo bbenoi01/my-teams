@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import sportsApi from '../../api/sportsApi';
+import { PURGE } from 'redux-persist';
 import { NFL_API_KEY_ } from '@env';
+import sportsApi from '../../api/sportsApi';
 
 export const getNFLTeams = createAsyncThunk(
 	'nfl/get_nfl_teams',
@@ -28,7 +29,12 @@ export const nflSlice = createSlice({
 		standings: null,
 		errors: null,
 	},
-	reducers: {},
+	reducers: {
+		clearNFLSlice: (state) => {
+			state.loading = false;
+			state.nflTeams = null;
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(getNFLTeams.pending, (state) => {
@@ -44,10 +50,13 @@ export const nflSlice = createSlice({
 			.addCase(getNFLTeams.rejected, (state, action) => {
 				state.loading = false;
 				state.errors = action.payload;
+			})
+			.addCase(clearNFLSlice, PURGE, (state) => {
+				customEntityAdapter.removeAll(state);
 			});
 	},
 });
 
-export const {} = nflSlice.actions;
+export const { clearNFLSlice } = nflSlice.actions;
 
 export default nflSlice.reducer;

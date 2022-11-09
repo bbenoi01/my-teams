@@ -19,26 +19,31 @@ import nhlReducer from './slices/nhlSlice';
 const hubPersistConfig = {
 	key: 'hub',
 	storage: AsyncStorage,
+	blacklist: ['news', 'players', 'stats', 'standings', 'errors'],
 };
 
 const nflPersistConfig = {
 	key: 'nfl',
 	storage: AsyncStorage,
+	blacklist: ['errors'],
 };
 
 const nbaPersistConfig = {
 	key: 'nba',
 	storage: AsyncStorage,
+	blacklist: ['errors'],
 };
 
 const mlbPersistConfig = {
 	key: 'mlb',
 	storage: AsyncStorage,
+	blacklist: ['errors'],
 };
 
 const nhlPersistConfig = {
 	key: 'nhl',
 	storage: AsyncStorage,
+	blacklist: ['errors'],
 };
 
 export const store = configureStore({

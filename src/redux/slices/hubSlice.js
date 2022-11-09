@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { PURGE } from 'redux-persist';
 
 export const hubSlice = createSlice({
 	name: 'hub',
@@ -18,6 +19,8 @@ export const hubSlice = createSlice({
 		players: null,
 		stats: null,
 		standings: null,
+		measure: null,
+		errors: null,
 	},
 	reducers: {
 		setSpread: (state) => {
@@ -42,6 +45,30 @@ export const hubSlice = createSlice({
 			state.nhlFav = action.payload.split(', ')[0];
 			state.nhlFavKey = action.payload.split(', ')[1];
 		},
+		setMeasure: (state, action) => {
+			state.measure = action.payload;
+		},
+		clearHubSlice: (state) => {
+			state.loading = false;
+			state.nflFav = null;
+			state.nflFavKey = null;
+			state.nbaFav = null;
+			state.nbaFavKey = null;
+			state.mlbFav = null;
+			state.mlbFavKey = null;
+			state.nhlFav = null;
+			state.nhlFavKey = null;
+			state.news = null;
+			state.players = null;
+			state.stats = null;
+			state.standings = null;
+			state.errors = null;
+		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(clearHubSlice, PURGE, (state) => {
+			customEntityAdapter.removeAll(state);
+		});
 	},
 });
 
@@ -52,6 +79,8 @@ export const {
 	setNBAFav,
 	setMLBFav,
 	setNHLFav,
+	setMeasure,
+	clearHubSlice,
 } = hubSlice.actions;
 
 export default hubSlice.reducer;

@@ -1,68 +1,180 @@
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
+import ReactNative, {
 	Animated,
-	ImageBackground,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native';
 import { Surface } from 'react-native-paper';
-import { setSpread } from '../../../redux/slices/hubSlice';
+import { getNFLTeams, clearNFLSlice } from '../../../redux/slices/nflSlice';
+import { getNBATeams, clearNBASlice } from '../../../redux/slices/nbaSlice';
+import { getMLBTeams, clearMLBSlice } from '../../../redux/slices/mlbSlice';
+import { getNHLTeams, clearNHLSlice } from '../../../redux/slices/nhlSlice';
+import {
+	setSpread,
+	setNFLFav,
+	setNBAFav,
+	setMLBFav,
+	setNHLFav,
+	setMeasure,
+	clearHubSlice,
+} from '../../../redux/slices/hubSlice';
+import { optionMap } from '../../../util/helpers';
+import Loading from '../../../components/Loading';
 import Quad from '../components/Quad';
 
 const HubScreen = ({ navigation }) => {
-	const { spread, nflFav, nbaFav, mlbFav, nhlFav } = useSelector(
+	const { spread, nflFav, nbaFav, mlbFav, nhlFav, measure } = useSelector(
 		(state) => state.hub
 	);
+	const hubLoading = useSelector((state) => state.hub.loading);
+	const { nflTeams } = useSelector((state) => state.nfl);
+	const nflLoading = useSelector((state) => state.nfl.loading);
+	const { nbaTeams } = useSelector((state) => state.nba);
+	const nbaLoading = useSelector((state) => state.nba.loading);
+	const { mlbTeams } = useSelector((state) => state.mlb);
+	const mlbLoading = useSelector((state) => state.mlb.loading);
+	const { nhlTeams } = useSelector((state) => state.nhl);
+	const nhlLoading = useSelector((state) => state.nhl.loading);
+	const parentRef = useRef(null);
+	const childRef = useRef(null);
+	const loading =
+		hubLoading || nflLoading || nbaLoading || mlbLoading || nhlLoading;
+
 	const dispatch = useDispatch();
 
-	console.log('Spread', spread);
+	const getDimensions = () => {};
+
+	let nflTeamOptions = [];
+	if (nflTeams) {
+		optionMap(nflTeams, nflTeamOptions);
+	}
+
+	let nbaTeamOptions = [];
+	if (nbaTeams) {
+		optionMap(nbaTeams, nbaTeamOptions);
+	}
+
+	let mlbTeamOptions = [];
+	if (mlbTeams) {
+		optionMap(mlbTeams, mlbTeamOptions);
+	}
+
+	let nhlTeamOptions = [];
+	if (nhlTeams) {
+		optionMap(nhlTeams, nhlTeamOptions);
+	}
+
+	const reset = () => {
+		dispatch(clearHubSlice());
+		dispatch(clearNFLSlice());
+		dispatch(clearNBASlice());
+		dispatch(clearMLBSlice());
+		dispatch(clearNHLSlice());
+	};
+
+	useEffect(() => {
+		if (!nflTeams) {
+			dispatch(getNFLTeams());
+		}
+		if (!nbaTeams) {
+			dispatch(getNBATeams());
+		}
+		if (!mlbTeams) {
+			dispatch(getMLBTeams());
+		}
+		if (!nhlTeams) {
+			dispatch(getNHLTeams());
+		}
+		if (childRef.current && parentRef.current) {
+			childRef.current.measureLayout(parentRef.current, (width, height) => {
+				dispatch(setMeasure({ width, height }));
+			});
+		}
+	}, [nflTeams, nbaTeams, mlbTeams, nhlTeams, measure]);
 
 	return (
 		<View style={styles.canvas}>
-			<Surface style={spread ? [styles.tl, styles.tlSpread] : styles.tl}>
+			{loading && <Loading />}
+			<Animated.View style={spread ? [styles.tl, styles.tlSpread] : styles.tl}>
 				<Text>News</Text>
-			</Surface>
-			<Surface style={spread ? [styles.tr, styles.trSpread] : styles.tr}>
-				<Text>Stats</Text>
-			</Surface>
+			</Animated.View>
+			<Animated.View>
+				<Surface style={spread ? [styles.tr, styles.trSpread] : styles.tr}>
+					<Text>Stats</Text>
+				</Surface>
+			</Animated.View>
+			<TouchableOpacity
+				style={{
+					backgroundColor: 'red',
+					borderRadius: 50,
+					position: 'absolute',
+					top: 30,
+					padding: 10,
+				}}
+				onPress={reset}
+			>
+				<Text style={{ color: 'whitesmoke' }}>Reset</Text>
+			</TouchableOpacity>
 			<Surface style={styles.surface}>
 				<View style={styles.head}>
 					<Text style={styles.headTxt}>Hub</Text>
 				</View>
-				<View style={styles.container}>
-					<Quad
-						onPress={() => dispatch(setSpread())}
-						background={require('../../../../assets/nflBackground.jpg')}
-					/>
-					<Quad
-						onPress={() => dispatch(setSpread())}
-						background={require('../../../../assets/nbaBackground.jpg')}
-					/>
-					<Quad
-						onPress={() => dispatch(setSpread())}
-						background={require('../../../../assets/mlbBackground.jpg')}
-					/>
-					<Quad
-						onPress={() => dispatch(setSpread())}
-						background={require('../../../../assets/nhlBackground.jpg')}
-					/>
+				<View style={styles.container} ref={parentRef}>
+					<View style={styles.quad} ref={childRef}>
+						<Quad
+							disabled={!nflFav}
+							onPress={() => dispatch(setSpread())}
+							background={require('../../../../assets/nflBackground.jpg')}
+							fav={nflFav}
+							options={nflTeamOptions}
+							onSelect={(e) => dispatch(setNFLFav(e === null ? null : e.value))}
+						/>
+					</View>
+					<View style={styles.quad}>
+						<Quad
+							disabled={!nbaFav}
+							onPress={() => dispatch(setSpread())}
+							background={require('../../../../assets/nbaBackground.jpg')}
+							fav={nbaFav}
+							options={nbaTeamOptions}
+							onSelect={(e) => dispatch(setNBAFav(e === null ? null : e.value))}
+						/>
+					</View>
+					<View style={styles.quad}>
+						<Quad
+							disabled={!mlbFav}
+							onPress={() => dispatch(setSpread())}
+							background={require('../../../../assets/mlbBackground.jpg')}
+							fav={mlbFav}
+							options={mlbTeamOptions}
+							onSelect={(e) => dispatch(setMLBFav(e === null ? null : e.value))}
+						/>
+					</View>
+					<View style={styles.quad}>
+						<Quad
+							disabled={!nhlFav}
+							onPress={() => dispatch(setSpread())}
+							background={require('../../../../assets/nhlBackground.jpg')}
+							fav={nhlFav}
+							options={nhlTeamOptions}
+							onSelect={(e) => dispatch(setNHLFav(e === null ? null : e.value))}
+						/>
+					</View>
 				</View>
 			</Surface>
-			<Surface style={spread ? [styles.bl, styles.blSpread] : styles.bl}>
-				<Text>Players</Text>
-			</Surface>
-			<Surface style={spread ? [styles.br, styles.brSpread] : styles.br}>
-				<Text>Standings</Text>
-			</Surface>
-			{/* <Text>HubScreen</Text>
-			<TouchableOpacity
-				style={styles.btn}
-				onPress={() => navigation.navigate('Sports')}
-			>
-				<Text>Submit</Text>
-			</TouchableOpacity> */}
+			<Animated.View>
+				<Surface style={spread ? [styles.bl, styles.blSpread] : styles.bl}>
+					<Text>Players</Text>
+				</Surface>
+			</Animated.View>
+			<Animated.View>
+				<Surface style={spread ? [styles.br, styles.brSpread] : styles.br}>
+					<Text>Standings</Text>
+				</Surface>
+			</Animated.View>
 		</View>
 	);
 };
@@ -79,12 +191,6 @@ const styles = StyleSheet.create({
 		position: 'relative',
 	},
 	spread: {},
-	// btn: {
-	// 	borderWidth: 1,
-	// 	borderRadius: 7,
-	// 	marginVertical: 10,
-	// 	padding: 5,
-	// },
 	tl: {
 		width: '50%',
 		height: '25%',
@@ -148,5 +254,9 @@ const styles = StyleSheet.create({
 		height: '90%',
 		flexDirection: 'row',
 		flexWrap: 'wrap',
+	},
+	quad: {
+		width: '50%',
+		height: '50%',
 	},
 });
