@@ -1,27 +1,34 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+	createSlice,
+	createAsyncThunk,
+	createEntityAdapter,
+} from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
+
+export const hubAdapter = createEntityAdapter();
+const initialState = hubAdapter.getInitialState({
+	loading: false,
+	spread: false,
+	sport: null,
+	nflFav: null,
+	nflFavKey: null,
+	nbaFav: null,
+	nbaFavKey: null,
+	mlbFav: null,
+	mlbFavKey: null,
+	nhlFav: null,
+	nhlFavKey: null,
+	news: null,
+	players: null,
+	stats: null,
+	standings: null,
+	dimensions: null,
+	errors: null,
+});
 
 export const hubSlice = createSlice({
 	name: 'hub',
-	initialState: {
-		loading: false,
-		spread: false,
-		sport: null,
-		nflFav: null,
-		nflFavKey: null,
-		nbaFav: null,
-		nbaFavKey: null,
-		mlbFav: null,
-		mlbFavKey: null,
-		nhlFav: null,
-		nhlFavKey: null,
-		news: null,
-		players: null,
-		stats: null,
-		standings: null,
-		measure: null,
-		errors: null,
-	},
+	initialState,
 	reducers: {
 		setSpread: (state) => {
 			state.spread = !state.spread;
@@ -45,8 +52,8 @@ export const hubSlice = createSlice({
 			state.nhlFav = action.payload.split(', ')[0];
 			state.nhlFavKey = action.payload.split(', ')[1];
 		},
-		setMeasure: (state, action) => {
-			state.measure = action.payload;
+		setDimensions: (state, action) => {
+			state.dimensions = action.payload;
 		},
 		clearHubSlice: (state) => {
 			state.loading = false;
@@ -66,9 +73,13 @@ export const hubSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		builder.addCase(clearHubSlice, PURGE, (state) => {
-			customEntityAdapter.removeAll(state);
-		});
+		builder
+			.addCase(clearHubSlice, (state) => {
+				hubAdapter.removeAll(state);
+			})
+			.addCase(PURGE, (state) => {
+				hubAdapter.removeAll(state);
+			});
 	},
 });
 
@@ -79,7 +90,7 @@ export const {
 	setNBAFav,
 	setMLBFav,
 	setNHLFav,
-	setMeasure,
+	setDimensions,
 	clearHubSlice,
 } = hubSlice.actions;
 

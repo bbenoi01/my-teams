@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+	createSlice,
+	createAsyncThunk,
+	createEntityAdapter,
+} from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
 import { NBA_API_KEY_ } from '@env';
 import sportsApi from '../../api/sportsApi';
@@ -17,18 +21,21 @@ export const getNBATeams = createAsyncThunk(
 	}
 );
 
+export const nbaAdapter = createEntityAdapter();
+const initialState = nbaAdapter.getInitialState({
+	loading: false,
+	nbaTeam: null,
+	nbaTeams: null,
+	news: null,
+	players: null,
+	stats: null,
+	standings: null,
+	errors: null,
+});
+
 export const nbaSlice = createSlice({
 	name: 'nba',
-	initialState: {
-		loading: false,
-		nbaTeam: null,
-		nbaTeams: null,
-		news: null,
-		players: null,
-		stats: null,
-		standings: null,
-		errors: null,
-	},
+	initialState,
 	reducers: {
 		clearNBASlice: (state) => {
 			state.loading = false;
@@ -51,8 +58,11 @@ export const nbaSlice = createSlice({
 				state.loading = false;
 				state.errors = action.payload;
 			})
-			.addCase(clearNBASlice, PURGE, (state) => {
-				customEntityAdapter.removeAll(state);
+			.addCase(clearNBASlice, (state) => {
+				nbaAdapter.removeAll(state);
+			})
+			.addCase(PURGE, (state) => {
+				nbaAdapter.removeAll(state);
 			});
 	},
 });

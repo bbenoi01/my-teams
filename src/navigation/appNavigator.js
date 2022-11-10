@@ -4,12 +4,14 @@ import { AntDesign } from '@expo/vector-icons';
 import { HubNavigator } from './hubNavigator';
 import { TabNavigator } from './tabNavigator';
 import Topbar from '../components/Topbar';
+import SettingsScreen from '../features/settings/screens/SettingsScreen';
 
 const AppDrawer = createDrawerNavigator();
 export const AppNavigator = () => {
 	const TAB_ICON = {
 		Hub: 'dashboard',
 		Schedules: 'calendar',
+		Settings: 'settings',
 	};
 	const createScreenOptions = ({ route }) => {
 		const iconName = TAB_ICON[route.name];
@@ -41,6 +43,17 @@ export const AppNavigator = () => {
 						);
 						break;
 
+					case 'Settings':
+						return (
+							<MaterialIcons
+								name={iconName}
+								size={size}
+								color={color}
+								focused={focused}
+							/>
+						);
+						break;
+
 					default:
 						break;
 				}
@@ -60,6 +73,7 @@ export const AppNavigator = () => {
 		>
 			<AppDrawer.Screen name='Hub' component={HubNavigator} />
 			<AppDrawer.Screen name='Schedules' component={TabNavigator} />
+			<AppDrawer.Screen name='Settings' component={SettingsScreen} />
 		</AppDrawer.Navigator>
 	);
 };

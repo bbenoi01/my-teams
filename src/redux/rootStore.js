@@ -19,7 +19,16 @@ import nhlReducer from './slices/nhlSlice';
 const hubPersistConfig = {
 	key: 'hub',
 	storage: AsyncStorage,
-	blacklist: ['news', 'players', 'stats', 'standings', 'errors'],
+	whitelist: [
+		'nflFav',
+		'nflFavKey',
+		'nbaFav',
+		'nbaFavKey',
+		'mlbFav',
+		'mlbFavKey',
+		'nhlFav',
+		'nhlFavKey',
+	],
 };
 
 const nflPersistConfig = {

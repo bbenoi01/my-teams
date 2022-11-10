@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+	createSlice,
+	createAsyncThunk,
+	createEntityAdapter,
+} from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
 import { NHL_API_KEY_ } from '@env';
 import sportsApi from '../../api/sportsApi';
@@ -17,19 +21,22 @@ export const getNHLTeams = createAsyncThunk(
 	}
 );
 
+export const nhlAdapter = createEntityAdapter();
+const initialState = nhlAdapter.getInitialState({
+	loading: false,
+	loading: false,
+	nhlTeam: null,
+	nhlTeams: null,
+	news: null,
+	players: null,
+	stats: null,
+	standings: null,
+	errors: null,
+});
+
 export const nhlSlice = createSlice({
 	name: 'nhl',
-	initialState: {
-		loading: false,
-		loading: false,
-		nhlTeam: null,
-		nhlTeams: null,
-		news: null,
-		players: null,
-		stats: null,
-		standings: null,
-		errors: null,
-	},
+	initialState,
 	reducers: {
 		clearNHLSlice: (state) => {
 			state.loading = false;
@@ -50,8 +57,11 @@ export const nhlSlice = createSlice({
 				state.loading = false;
 				state.errors = action.payload;
 			})
-			.addCase(clearNHLSlice, PURGE, (state) => {
-				customEntityAdapter.removeAll(state);
+			.addCase(clearNHLSlice, (state) => {
+				nhlAdapter.removeAll(state);
+			})
+			.addCase(PURGE, (state) => {
+				nhlAdapter.removeAll(state);
 			});
 	},
 });

@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+	createSlice,
+	createAsyncThunk,
+	createEntityAdapter,
+} from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
 import { MLB_API_KEY_ } from '@env';
 import sportsApi from '../../api/sportsApi';
@@ -17,18 +21,21 @@ export const getMLBTeams = createAsyncThunk(
 	}
 );
 
+export const mlbAdapter = createEntityAdapter();
+const initialState = mlbAdapter.getInitialState({
+	loading: false,
+	mlbTeam: null,
+	mlbTeams: null,
+	news: null,
+	players: null,
+	stats: null,
+	standings: null,
+	errors: null,
+});
+
 export const mlbSlice = createSlice({
 	name: 'mlb',
-	initialState: {
-		loading: false,
-		mlbTeam: null,
-		mlbTeams: null,
-		news: null,
-		players: null,
-		stats: null,
-		standings: null,
-		errors: null,
-	},
+	initialState,
 	reducers: {
 		clearMLBSlice: (state) => {
 			state.loading = false;
@@ -51,8 +58,11 @@ export const mlbSlice = createSlice({
 				state.loading = false;
 				state.errors = action.payload;
 			})
-			.addCase(clearMLBSlice, PURGE, (state) => {
-				customEntityAdapter.removeAll(state);
+			.addCase(clearMLBSlice, (state) => {
+				mlbAdapter.removeAll(state);
+			})
+			.addCase(PURGE, (state) => {
+				mlbAdapter.removeAll(state);
 			});
 	},
 });

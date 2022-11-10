@@ -1,32 +1,26 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ReactNative, {
-	Animated,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Surface } from 'react-native-paper';
-import { getNFLTeams, clearNFLSlice } from '../../../redux/slices/nflSlice';
-import { getNBATeams, clearNBASlice } from '../../../redux/slices/nbaSlice';
-import { getMLBTeams, clearMLBSlice } from '../../../redux/slices/mlbSlice';
-import { getNHLTeams, clearNHLSlice } from '../../../redux/slices/nhlSlice';
+import { getNFLTeams } from '../../../redux/slices/nflSlice';
+import { getNBATeams } from '../../../redux/slices/nbaSlice';
+import { getMLBTeams } from '../../../redux/slices/mlbSlice';
+import { getNHLTeams } from '../../../redux/slices/nhlSlice';
 import {
 	setSpread,
 	setNFLFav,
 	setNBAFav,
 	setMLBFav,
 	setNHLFav,
-	setMeasure,
-	clearHubSlice,
+	setDimensions,
 } from '../../../redux/slices/hubSlice';
 import { optionMap } from '../../../util/helpers';
 import Loading from '../../../components/Loading';
 import Quad from '../components/Quad';
+import Tab from '../components/Tab';
 
 const HubScreen = ({ navigation }) => {
-	const { spread, nflFav, nbaFav, mlbFav, nhlFav, measure } = useSelector(
+	const { spread, nflFav, nbaFav, mlbFav, nhlFav, dimensions } = useSelector(
 		(state) => state.hub
 	);
 	const hubLoading = useSelector((state) => state.hub.loading);
@@ -45,7 +39,33 @@ const HubScreen = ({ navigation }) => {
 
 	const dispatch = useDispatch();
 
-	const getDimensions = () => {};
+	const tlSpread = {
+		transform: dimensions && [
+			{ translateX: -(dimensions.width / 1.7) },
+			{ translateY: -(dimensions.height / 1.2) },
+		],
+	};
+
+	const trSpread = {
+		transform: dimensions && [
+			{ translateX: dimensions.width / 1.7 },
+			{ translateY: -(dimensions.height / 1.2) },
+		],
+	};
+
+	const blSpread = {
+		transform: dimensions && [
+			{ translateX: -(dimensions.width / 1.7) },
+			{ translateY: dimensions.height / 1.2 },
+		],
+	};
+
+	const brSpread = {
+		transform: dimensions && [
+			{ translateX: dimensions.width / 1.7 },
+			{ translateY: dimensions.height / 1.2 },
+		],
+	};
 
 	let nflTeamOptions = [];
 	if (nflTeams) {
@@ -67,14 +87,6 @@ const HubScreen = ({ navigation }) => {
 		optionMap(nhlTeams, nhlTeamOptions);
 	}
 
-	const reset = () => {
-		dispatch(clearHubSlice());
-		dispatch(clearNFLSlice());
-		dispatch(clearNBASlice());
-		dispatch(clearMLBSlice());
-		dispatch(clearNHLSlice());
-	};
-
 	useEffect(() => {
 		if (!nflTeams) {
 			dispatch(getNFLTeams());
@@ -88,36 +100,37 @@ const HubScreen = ({ navigation }) => {
 		if (!nhlTeams) {
 			dispatch(getNHLTeams());
 		}
-		if (childRef.current && parentRef.current) {
-			childRef.current.measureLayout(parentRef.current, (width, height) => {
-				dispatch(setMeasure({ width, height }));
-			});
+	}, [nflTeams, nbaTeams, mlbTeams, nhlTeams]);
+
+	useEffect(() => {
+		if (!dimensions || dimensions.width === 0) {
+			childRef.current.measureLayout(
+				parentRef.current,
+				(left, top, width, height) => {
+					dispatch(setDimensions({ left, top, width, height }));
+				}
+			);
 		}
-	}, [nflTeams, nbaTeams, mlbTeams, nhlTeams, measure]);
+	}, [dimensions]);
 
 	return (
 		<View style={styles.canvas}>
 			{loading && <Loading />}
-			<Animated.View style={spread ? [styles.tl, styles.tlSpread] : styles.tl}>
-				<Text>News</Text>
-			</Animated.View>
-			<Animated.View>
-				<Surface style={spread ? [styles.tr, styles.trSpread] : styles.tr}>
-					<Text>Stats</Text>
-				</Surface>
-			</Animated.View>
-			<TouchableOpacity
-				style={{
-					backgroundColor: 'red',
-					borderRadius: 50,
-					position: 'absolute',
-					top: 30,
-					padding: 10,
-				}}
-				onPress={reset}
-			>
-				<Text style={{ color: 'whitesmoke' }}>Reset</Text>
-			</TouchableOpacity>
+			<Tab
+				spread={spread}
+				backgroud='green'
+				spreadStyle={tlSpread}
+				title='News'
+				onPress={() => navigation.navigate('News')}
+			/>
+			<Tab
+				spread={spread}
+				backgroud='red'
+				spreadStyle={trSpread}
+				title='Stats'
+				titlePlacement={{ alignItems: 'flex-end' }}
+				onPress={() => navigation.navigate('Stats')}
+			/>
 			<Surface style={styles.surface}>
 				<View style={styles.head}>
 					<Text style={styles.headTxt}>Hub</Text>
@@ -165,16 +178,22 @@ const HubScreen = ({ navigation }) => {
 					</View>
 				</View>
 			</Surface>
-			<Animated.View>
-				<Surface style={spread ? [styles.bl, styles.blSpread] : styles.bl}>
-					<Text>Players</Text>
-				</Surface>
-			</Animated.View>
-			<Animated.View>
-				<Surface style={spread ? [styles.br, styles.brSpread] : styles.br}>
-					<Text>Standings</Text>
-				</Surface>
-			</Animated.View>
+			<Tab
+				spread={spread}
+				backgroud='dodgerblue'
+				spreadStyle={blSpread}
+				title='Players'
+				titlePlacement={{ justifyContent: 'flex-end' }}
+				onPress={() => navigation.navigate('Players')}
+			/>
+			<Tab
+				spread={spread}
+				backgroud='indigo'
+				spreadStyle={brSpread}
+				title='Standings'
+				titlePlacement={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}
+				onPress={() => navigation.navigate('Standings')}
+			/>
 		</View>
 	);
 };
@@ -190,52 +209,11 @@ const styles = StyleSheet.create({
 		padding: 20,
 		position: 'relative',
 	},
-	spread: {},
-	tl: {
-		width: '50%',
-		height: '25%',
-		position: 'absolute',
-		zIndex: 0,
-		backgroundColor: 'green',
-	},
-	tlSpread: {
-		transform: [{ translateX: -96 }, { translateY: -300 }],
-	},
-	tr: {
-		width: '50%',
-		height: '25%',
-		position: 'absolute',
-		zIndex: 0,
-		backgroundColor: 'red',
-	},
-	trSpread: {
-		transform: [{ translateX: 96 }, { translateY: -300 }],
-	},
 	surface: {
 		width: '100%',
 		height: '50%',
 		position: 'absolute',
 		zIndex: 1,
-	},
-	bl: {
-		width: '50%',
-		height: '25%',
-		position: 'absolute',
-		zIndex: 0,
-		backgroundColor: 'dodgerblue',
-	},
-	blSpread: {
-		transform: [{ translateX: -96 }, { translateY: 300 }],
-	},
-	br: {
-		width: '50%',
-		height: '25%',
-		position: 'absolute',
-		zIndex: 0,
-		backgroundColor: 'indigo',
-	},
-	brSpread: {
-		transform: [{ translateX: 96 }, { translateY: 300 }],
 	},
 	head: {
 		width: '100%',

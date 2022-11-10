@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+	createSlice,
+	createAsyncThunk,
+	createEntityAdapter,
+} from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
 import { NFL_API_KEY_ } from '@env';
 import sportsApi from '../../api/sportsApi';
@@ -17,18 +21,21 @@ export const getNFLTeams = createAsyncThunk(
 	}
 );
 
+export const nflAdapter = createEntityAdapter();
+const initialState = nflAdapter.getInitialState({
+	loading: false,
+	nflTeam: null,
+	nflTeams: null,
+	news: null,
+	players: null,
+	stats: null,
+	standings: null,
+	errors: null,
+});
+
 export const nflSlice = createSlice({
 	name: 'nfl',
-	initialState: {
-		loading: false,
-		nflTeam: null,
-		nflTeams: null,
-		news: null,
-		players: null,
-		stats: null,
-		standings: null,
-		errors: null,
-	},
+	initialState,
 	reducers: {
 		clearNFLSlice: (state) => {
 			state.loading = false;
@@ -51,8 +58,11 @@ export const nflSlice = createSlice({
 				state.loading = false;
 				state.errors = action.payload;
 			})
-			.addCase(clearNFLSlice, PURGE, (state) => {
-				customEntityAdapter.removeAll(state);
+			.addCase(clearNFLSlice, (state) => {
+				nflAdapter.removeAll(state);
+			})
+			.addCase(PURGE, (state) => {
+				nflAdapter.removeAll(state);
 			});
 	},
 });
