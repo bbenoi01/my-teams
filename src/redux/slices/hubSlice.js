@@ -79,6 +79,23 @@ export const hubSlice = createSlice({
 			})
 			.addCase(PURGE, (state) => {
 				hubAdapter.removeAll(state);
+				state.loading = false;
+				state.spread = false;
+				state.sport = null;
+				state.nflFav = null;
+				state.nflFavKey = null;
+				state.nbaFav = null;
+				state.nbaFavKey = null;
+				state.mlbFav = null;
+				state.mlbFavKey = null;
+				state.nhlFav = null;
+				state.nhlFavKey = null;
+				state.news = null;
+				state.players = null;
+				state.stats = null;
+				state.standings = null;
+				state.dimensions = null;
+				state.errors = null;
 			});
 	},
 });

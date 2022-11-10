@@ -2,12 +2,37 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { StyleSheet, Text, View } from 'react-native';
 import { Surface } from 'react-native-paper';
-import { getNFLTeams } from '../../../redux/slices/nflSlice';
-import { getNBATeams } from '../../../redux/slices/nbaSlice';
-import { getMLBTeams } from '../../../redux/slices/mlbSlice';
-import { getNHLTeams } from '../../../redux/slices/nhlSlice';
+import {
+	getNFLTeams,
+	getNFLNews,
+	getNFLFavTeamPlayers,
+	getNFLTeamStats,
+	getNFLStandings,
+} from '../../../redux/slices/nflSlice';
+import {
+	getNBATeams,
+	getNBANews,
+	getNBAFavTeamPlayers,
+	getNBATeamStats,
+	getNBAStandings,
+} from '../../../redux/slices/nbaSlice';
+import {
+	getMLBTeams,
+	getMLBNews,
+	getMLBFavTeamPlayers,
+	getMLBTeamStats,
+	getMLBStandings,
+} from '../../../redux/slices/mlbSlice';
+import {
+	getNHLTeams,
+	getNHLNews,
+	getNHLFavTeamPlayers,
+	getNHLTeamStats,
+	getNHLStandings,
+} from '../../../redux/slices/nhlSlice';
 import {
 	setSpread,
+	setSport,
 	setNFLFav,
 	setNBAFav,
 	setMLBFav,
@@ -20,17 +45,35 @@ import Quad from '../components/Quad';
 import Tab from '../components/Tab';
 
 const HubScreen = ({ navigation }) => {
-	const { spread, nflFav, nbaFav, mlbFav, nhlFav, dimensions } = useSelector(
-		(state) => state.hub
-	);
+	const {
+		spread,
+		sport,
+		nflFav,
+		nflFavKey,
+		nbaFav,
+		nbaFavKey,
+		mlbFav,
+		mlbFavKey,
+		nhlFav,
+		nhlFavKey,
+		dimensions,
+	} = useSelector((state) => state.hub);
 	const hubLoading = useSelector((state) => state.hub.loading);
-	const { nflTeams } = useSelector((state) => state.nfl);
+	const { nflTeams, nflNews, nflPlayers, nflStats, nflStandings } = useSelector(
+		(state) => state.nfl
+	);
 	const nflLoading = useSelector((state) => state.nfl.loading);
-	const { nbaTeams } = useSelector((state) => state.nba);
+	const { nbaTeams, nbaNews, nbaPlayers, nbaStats, nbaStandings } = useSelector(
+		(state) => state.nba
+	);
 	const nbaLoading = useSelector((state) => state.nba.loading);
-	const { mlbTeams } = useSelector((state) => state.mlb);
+	const { mlbTeams, mlbNews, mlbPlayers, mlbStats, mlbStandings } = useSelector(
+		(state) => state.mlb
+	);
 	const mlbLoading = useSelector((state) => state.mlb.loading);
-	const { nhlTeams } = useSelector((state) => state.nhl);
+	const { nhlTeams, nhlNews, nhlPlayers, nhlStats, nhlStandings } = useSelector(
+		(state) => state.nhl
+	);
 	const nhlLoading = useSelector((state) => state.nhl.loading);
 	const parentRef = useRef(null);
 	const childRef = useRef(null);
@@ -38,6 +81,44 @@ const HubScreen = ({ navigation }) => {
 		hubLoading || nflLoading || nbaLoading || mlbLoading || nhlLoading;
 
 	const dispatch = useDispatch();
+
+	const handleTabPress = (sport) => {
+		switch (sport) {
+			case 'nfl':
+				!nflNews && dispatch(getNFLNews());
+				!nflPlayers && dispatch(getNFLFavTeamPlayers(nflFavKey));
+				!nflStats && dispatch(getNFLTeamStats());
+				!nflStandings && dispatch(getNFLStandings());
+				break;
+
+			case 'nba':
+				!nbaNews && dispatch(getNBANews());
+				!nbaPlayers && dispatch(getNBAFavTeamPlayers(nbaFavKey));
+				!nbaStats && dispatch(getNBATeamStats());
+				!nbaStandings && dispatch(getNBAStandings());
+				break;
+
+			case 'mlb':
+				!mlbNews && dispatch(getMLBNews());
+				!mlbPlayers && dispatch(getMLBFavTeamPlayers(mlbFavKey));
+				!mlbStats && dispatch(getMLBTeamStats());
+				!mlbStandings && dispatch(getMLBStandings());
+				break;
+
+			case 'nhl':
+				!nhlNews && dispatch(getNHLNews());
+				!nhlPlayers && dispatch(getNHLFavTeamPlayers(nhlFavKey));
+				!nhlStats && dispatch(getNHLTeamStats());
+				!nhlStandings && dispatch(getNHLStandings());
+				break;
+
+			default:
+				dispatch(setSpread());
+				break;
+		}
+		dispatch(setSport(sport));
+		dispatch(setSpread());
+	};
 
 	const tlSpread = {
 		transform: dimensions && [
@@ -100,9 +181,6 @@ const HubScreen = ({ navigation }) => {
 		if (!nhlTeams) {
 			dispatch(getNHLTeams());
 		}
-	}, [nflTeams, nbaTeams, mlbTeams, nhlTeams]);
-
-	useEffect(() => {
 		if (!dimensions || dimensions.width === 0) {
 			childRef.current.measureLayout(
 				parentRef.current,
@@ -111,21 +189,22 @@ const HubScreen = ({ navigation }) => {
 				}
 			);
 		}
-	}, [dimensions]);
+	}, [nflTeams, nbaTeams, mlbTeams, nhlTeams, dimensions]);
+
+	// useEffect(() => {
+	// }, []);
 
 	return (
 		<View style={styles.canvas}>
 			{loading && <Loading />}
 			<Tab
 				spread={spread}
-				backgroud='green'
 				spreadStyle={tlSpread}
 				title='News'
 				onPress={() => navigation.navigate('News')}
 			/>
 			<Tab
 				spread={spread}
-				backgroud='red'
 				spreadStyle={trSpread}
 				title='Stats'
 				titlePlacement={{ alignItems: 'flex-end' }}
@@ -138,8 +217,8 @@ const HubScreen = ({ navigation }) => {
 				<View style={styles.container} ref={parentRef}>
 					<View style={styles.quad} ref={childRef}>
 						<Quad
-							disabled={!nflFav}
-							onPress={() => dispatch(setSpread())}
+							disabled={!nflFav || (spread && sport !== 'nfl')}
+							onPress={() => handleTabPress('nfl')}
 							background={require('../../../../assets/nflBackground.jpg')}
 							fav={nflFav}
 							options={nflTeamOptions}
@@ -148,8 +227,8 @@ const HubScreen = ({ navigation }) => {
 					</View>
 					<View style={styles.quad}>
 						<Quad
-							disabled={!nbaFav}
-							onPress={() => dispatch(setSpread())}
+							disabled={!nbaFav || (spread && sport !== 'nba')}
+							onPress={() => handleTabPress('nba')}
 							background={require('../../../../assets/nbaBackground.jpg')}
 							fav={nbaFav}
 							options={nbaTeamOptions}
@@ -158,8 +237,8 @@ const HubScreen = ({ navigation }) => {
 					</View>
 					<View style={styles.quad}>
 						<Quad
-							disabled={!mlbFav}
-							onPress={() => dispatch(setSpread())}
+							disabled={!mlbFav || (spread && sport !== 'mlb')}
+							onPress={() => handleTabPress('mlb')}
 							background={require('../../../../assets/mlbBackground.jpg')}
 							fav={mlbFav}
 							options={mlbTeamOptions}
@@ -168,8 +247,8 @@ const HubScreen = ({ navigation }) => {
 					</View>
 					<View style={styles.quad}>
 						<Quad
-							disabled={!nhlFav}
-							onPress={() => dispatch(setSpread())}
+							disabled={!nhlFav || (spread && sport !== 'nhl')}
+							onPress={() => handleTabPress('nhl')}
 							background={require('../../../../assets/nhlBackground.jpg')}
 							fav={nhlFav}
 							options={nhlTeamOptions}
@@ -180,7 +259,6 @@ const HubScreen = ({ navigation }) => {
 			</Surface>
 			<Tab
 				spread={spread}
-				backgroud='dodgerblue'
 				spreadStyle={blSpread}
 				title='Players'
 				titlePlacement={{ justifyContent: 'flex-end' }}
@@ -188,7 +266,6 @@ const HubScreen = ({ navigation }) => {
 			/>
 			<Tab
 				spread={spread}
-				backgroud='indigo'
 				spreadStyle={brSpread}
 				title='Standings'
 				titlePlacement={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}

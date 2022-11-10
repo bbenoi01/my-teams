@@ -21,15 +21,95 @@ export const getMLBTeams = createAsyncThunk(
 	}
 );
 
+export const getMLBNews = createAsyncThunk(
+	'mlb/get_news',
+	async (mlbData, { rejectWithValue }) => {
+		try {
+			const res = await sportsApi.get(
+				`/mlb/scores/json/News?key=${MLB_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
+export const getMLBFavTeamPlayers = createAsyncThunk(
+	'mlb/get_fav_team_players',
+	async (team, { rejectWithValue }) => {
+		try {
+			const res = await sportsApi.get(
+				`/mlb/scores/json/Players/${team}?key=${MLB_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
+export const getMLBTeamStats = createAsyncThunk(
+	'mlb/get_team_stats',
+	async (mlbData, { rejectWithValue }) => {
+		try {
+			const season = await sportsApi.get(
+				`/mlb/scores/json/CurrentSeason?key=${MLB_API_KEY_}`
+			);
+			const res = await sportsApi.get(
+				`/mlb/scores/json/TeamSeasonStats/${season.data.Season}?key=${MLB_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			if (err.response.data.Code === 401) {
+				const retry = await sportsApi.get(
+					`/mlb/scores/json/TeamSeasonStats/${
+						season.data.Season - 1
+					}?key=${MLB_API_KEY_}`
+				);
+				return { code: err.response.data.Code, retryRes: retry.data };
+			} else {
+				return rejectWithValue(err.response.data);
+			}
+		}
+	}
+);
+
+export const getMLBStandings = createAsyncThunk(
+	'mlb/get_standings',
+	async (mlbData, { rejectWithValue }) => {
+		try {
+			const season = await sportsApi.get(
+				`/mlb/scores/json/CurrentSeason?key=${MLB_API_KEY_}`
+			);
+			const res = await sportsApi.get(
+				`/mlb/scores/json/Standings/${season.data.Season}?key=${MLB_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			if (err.response.data.Code === 401) {
+				const retry = await sportsApi.get(
+					`/mlb/scores/json/Standings/${
+						season.data.Season - 1
+					}?key=${MLB_API_KEY_}`
+				);
+				return { code: err.response.data.Code, retryRes: retry.data };
+			} else {
+				return rejectWithValue(err.response.data);
+			}
+		}
+	}
+);
+
 export const mlbAdapter = createEntityAdapter();
 const initialState = mlbAdapter.getInitialState({
 	loading: false,
 	mlbTeam: null,
 	mlbTeams: null,
-	news: null,
-	players: null,
-	stats: null,
-	standings: null,
+	mlbNews: null,
+	mlbPlayers: null,
+	mlbStats: null,
+	mlbStandings: null,
 	errors: null,
 });
 
@@ -58,11 +138,75 @@ export const mlbSlice = createSlice({
 				state.loading = false;
 				state.errors = action.payload;
 			})
+			.addCase(getMLBNews.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getMLBNews.fulfilled, (state, action) => {
+				state.loading = false;
+				state.mlbNews = action.payload;
+			})
+			.addCase(getMLBNews.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			})
+			.addCase(getMLBFavTeamPlayers.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getMLBFavTeamPlayers.fulfilled, (state, action) => {
+				state.loading = false;
+				state.mlbPlayers = action.payload;
+			})
+			.addCase(getMLBFavTeamPlayers.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			})
+			.addCase(getMLBTeamStats.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getMLBTeamStats.fulfilled, (state, action) => {
+				state.loading = false;
+				state.mlbStats = action.payload;
+			})
+			.addCase(getMLBTeamStats.rejected, (state, action) => {
+				state.loading = false;
+				if (action.payload.code) {
+					state.mlbStats = action.payload.retryRes;
+				} else {
+					state.errors = action.payload;
+				}
+			})
+			.addCase(getMLBStandings.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getMLBStandings.fulfilled, (state, action) => {
+				state.loading = false;
+				state.mlbStandings = action.payload;
+			})
+			.addCase(getMLBStandings.rejected, (state, action) => {
+				state.loading = false;
+				if (action.payload.code) {
+					state.mlbStandings = action.payload.retryRes;
+				} else {
+					state.errors = action.payload;
+				}
+			})
 			.addCase(clearMLBSlice, (state) => {
 				mlbAdapter.removeAll(state);
 			})
 			.addCase(PURGE, (state) => {
 				mlbAdapter.removeAll(state);
+				state.loading = false;
+				state.mlbTeam = null;
+				state.mlbTeams = null;
+				state.mlbNews = null;
+				state.mlbPlayers = null;
+				state.mlbStats = null;
+				state.mlbStandings = null;
+				state.errors = null;
 			});
 	},
 });

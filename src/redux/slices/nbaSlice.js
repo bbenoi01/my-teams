@@ -21,15 +21,95 @@ export const getNBATeams = createAsyncThunk(
 	}
 );
 
+export const getNBANews = createAsyncThunk(
+	'nba/get_news',
+	async (nbaData, { rejectWithValue }) => {
+		try {
+			const res = await sportsApi.get(
+				`/nba/scores/json/News?key=${NBA_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
+export const getNBAFavTeamPlayers = createAsyncThunk(
+	'nba/get_fav_team_players',
+	async (team, { rejectWithValue }) => {
+		try {
+			const res = await sportsApi.get(
+				`/nba/scores/json/Players/${team}?key=${NBA_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
+export const getNBATeamStats = createAsyncThunk(
+	'nba/get_team_stats',
+	async (nbaData, { rejectWithValue }) => {
+		try {
+			const season = await sportsApi.get(
+				`/nba/scores/json/CurrentSeason?key=${NBA_API_KEY_}`
+			);
+			const res = await sportsApi.get(
+				`/nba/scores/json/TeamSeasonStats/${season.data.Season}?key=${NBA_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			if (err.response.data.Code === 401) {
+				const retry = await sportsApi.get(
+					`/nba/scores/json/TeamSeasonStats/${
+						season.data.Season - 1
+					}?key=${NBA_API_KEY_}`
+				);
+				return { code: err.response.data.Code, retryRes: retry.data };
+			} else {
+				return rejectWithValue(err.response.data);
+			}
+		}
+	}
+);
+
+export const getNBAStandings = createAsyncThunk(
+	'nba/get_standings',
+	async (nbaData, { rejectWithValue }) => {
+		try {
+			const season = await sportsApi.get(
+				`/nba/scores/json/CurrentSeason?key=${NBA_API_KEY_}`
+			);
+			const res = await sportsApi.get(
+				`/nba/scores/json/Standings/${season.data.Season}?key=${NBA_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			if (err.response.data.Code === 401) {
+				const retry = await sportsApi.get(
+					`/nba/scores/json/Standings/${
+						season.data.Season - 1
+					}?key=${NBA_API_KEY_}`
+				);
+				return { code: err.response.data.Code, retryRes: retry.data };
+			} else {
+				return rejectWithValue(err.response.data);
+			}
+		}
+	}
+);
+
 export const nbaAdapter = createEntityAdapter();
 const initialState = nbaAdapter.getInitialState({
 	loading: false,
 	nbaTeam: null,
 	nbaTeams: null,
-	news: null,
-	players: null,
-	stats: null,
-	standings: null,
+	nbaNews: null,
+	nbaPlayers: null,
+	nbaStats: null,
+	nbaStandings: null,
 	errors: null,
 });
 
@@ -58,11 +138,75 @@ export const nbaSlice = createSlice({
 				state.loading = false;
 				state.errors = action.payload;
 			})
+			.addCase(getNBANews.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getNBANews.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nbaNews = action.payload;
+			})
+			.addCase(getNBANews.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			})
+			.addCase(getNBAFavTeamPlayers.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getNBAFavTeamPlayers.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nbaPlayers = action.payload;
+			})
+			.addCase(getNBAFavTeamPlayers.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			})
+			.addCase(getNBATeamStats.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getNBATeamStats.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nbaStats = action.payload;
+			})
+			.addCase(getNBATeamStats.rejected, (state, action) => {
+				state.loading = false;
+				if (action.payload.code) {
+					state.nbaStats = action.payload.retryRes;
+				} else {
+					state.errors = action.payload;
+				}
+			})
+			.addCase(getNBAStandings.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getNBAStandings.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nbaStandings = action.payload;
+			})
+			.addCase(getNBAStandings.rejected, (state, action) => {
+				state.loading = false;
+				if (action.payload.code) {
+					state.nbaStandings = action.payload.retryRes;
+				} else {
+					state.errors = action.payload;
+				}
+			})
 			.addCase(clearNBASlice, (state) => {
 				nbaAdapter.removeAll(state);
 			})
 			.addCase(PURGE, (state) => {
 				nbaAdapter.removeAll(state);
+				state.loading = false;
+				state.nbaTeam = null;
+				state.nbaTeams = null;
+				state.nbaNews = null;
+				state.nbaPlayers = null;
+				state.nbaStats = null;
+				state.nbaStandings = null;
+				state.errors = null;
 			});
 	},
 });

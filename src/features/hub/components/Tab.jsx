@@ -1,26 +1,14 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Surface } from 'react-native-paper';
 
-const Tab = ({
-	spread,
-	backgroud,
-	spreadStyle,
-	title,
-	titlePlacement,
-	onPress,
-}) => {
+const Tab = ({ spread, spreadStyle, title, titlePlacement, onPress }) => {
 	return (
 		<TouchableOpacity
 			style={spread ? [styles.canvas, spreadStyle] : styles.canvas}
 			onPress={onPress}
 		>
-			<Surface
-				style={[
-					styles.surface,
-					{ backgroundColor: backgroud, ...titlePlacement },
-				]}
-			>
-				<Text>{title}</Text>
+			<Surface style={[styles.surface, { ...titlePlacement }]}>
+				<Text style={styles.tabTxt}>{title}</Text>
 			</Surface>
 		</TouchableOpacity>
 	);
@@ -38,5 +26,10 @@ const styles = StyleSheet.create({
 	surface: {
 		width: '100%',
 		height: '100%',
+		padding: 10,
+		backgroundColor: '#16161A',
+	},
+	tabTxt: {
+		color: '#94a1b2',
 	},
 });
