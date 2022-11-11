@@ -1,8 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { setStatDimensions } from '../../../redux/slices/hubSlice';
 import Loading from '../../../components/Loading';
+import NFLBLock from '../components/NFLBLock';
+import NBABlock from '../components/NBABlock';
+import MLBBlock from '../components/MLBBlock';
+import NHLBlock from '../components/NHLBlock';
 
 const StatsScreen = ({ navigation }) => {
 	const { loading, sport, statDimensions } = useSelector((state) => state.hub);
@@ -13,6 +17,25 @@ const StatsScreen = ({ navigation }) => {
 	const parentRef = useRef(null);
 	const childRef = useRef(null);
 	const dispatch = useDispatch();
+
+	const blockToRender = (item) => {
+		switch (sport) {
+			case 'nfl':
+				return <NFLBLock item={item} dimensions={blockDimensions} />;
+				break;
+			case 'nba':
+				return <NBABlock item={item} dimensions={blockDimensions} />;
+				break;
+			case 'mlb':
+				return <MLBBlock item={item} dimensions={blockDimensions} />;
+				break;
+			case 'nhl':
+				return <NHLBlock item={item} dimensions={blockDimensions} />;
+				break;
+			default:
+				break;
+		}
+	};
 
 	const blockDimensions = {
 		width: statDimensions && statDimensions.width - 40,
@@ -65,39 +88,7 @@ const StatsScreen = ({ navigation }) => {
 					<FlatList
 						style={styles.list}
 						data={data}
-						renderItem={({ item }) => (
-							<View style={[styles.block, blockDimensions]}>
-								<Image
-									style={styles.img}
-									source={{
-										uri: 'https://qph.cf2.quoracdn.net/main-qimg-042afa7d0b17935614aaeea8d8c12647-lq',
-									}}
-								/>
-								<Text style={styles.txt}>{item.TeamName}</Text>
-								<View style={styles.statsContainer}>
-									<View style={styles.statWrapper}>
-										<Text style={styles.txt}>Season:</Text>
-										<Text style={styles.txt}>{item.Season}</Text>
-									</View>
-									<View style={styles.statWrapper}>
-										<Text style={styles.txt}>PF:</Text>
-										<Text style={styles.txt}>{item.Score}</Text>
-									</View>
-									<View style={styles.statWrapper}>
-										<Text style={styles.txt}>PA:</Text>
-										<Text style={styles.txt}>{item.OpponentScore}</Text>
-									</View>
-									<View style={styles.statWrapper}>
-										<Text style={styles.txt}>Touchdowns:</Text>
-										<Text style={styles.txt}>{item.Touchdowns}</Text>
-									</View>
-									<View style={styles.statWrapper}>
-										<Text style={styles.txt}>Penalties:</Text>
-										<Text style={styles.txt}>{item.Penalties}</Text>
-									</View>
-								</View>
-							</View>
-						)}
+						renderItem={({ item }) => blockToRender(item)}
 						keyExtractor={(item) => item.Team}
 					/>
 				) : (
@@ -126,35 +117,9 @@ const styles = StyleSheet.create({
 		marginVertical: 20,
 	},
 	listContainer: {
-		borderWidth: 1,
-		borderColor: 'red',
 		flex: 1,
 		width: '100%',
 		alignItems: 'center',
 		paddingVertical: 10,
-	},
-	block: {
-		justifyContent: 'space-around',
-		alignItems: 'center',
-		borderWidth: 1,
-		borderColor: '#94a1b2',
-		borderStyle: 'dotted',
-		borderRadius: 20,
-		padding: 20,
-		marginVertical: 10,
-		backgroundColor: '#232629',
-	},
-	img: {
-		width: 60,
-		height: 60,
-		borderRadius: 50,
-		borderWidth: 1,
-	},
-	statsContainer: {
-		width: '100%',
-	},
-	statWrapper: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
 	},
 });

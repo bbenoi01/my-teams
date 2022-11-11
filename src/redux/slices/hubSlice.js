@@ -24,6 +24,7 @@ const initialState = hubAdapter.getInitialState({
 	standings: null,
 	tabDimensions: null,
 	statDimensions: null,
+	playerDimensions: null,
 	errors: null,
 });
 
@@ -59,6 +60,9 @@ export const hubSlice = createSlice({
 		setStatDimensions: (state, action) => {
 			state.statDimensions = action.payload;
 		},
+		setPlayerDimensions: (state, action) => {
+			state.playerDimensions = action.payload;
+		},
 		clearHubSlice: (state) => {
 			state.loading = false;
 			state.nflFav = null;
@@ -75,6 +79,7 @@ export const hubSlice = createSlice({
 			state.standings = null;
 			state.tabDimensions = null;
 			state.statDimensions = null;
+			state.playerDimensions = null;
 			state.errors = null;
 		},
 	},
@@ -102,6 +107,7 @@ export const hubSlice = createSlice({
 				state.standings = null;
 				state.tabDimensions = null;
 				state.statDimensions = null;
+				state.playerDimensions = null;
 				state.errors = null;
 			});
 	},
@@ -116,6 +122,7 @@ export const {
 	setNHLFav,
 	setTabDimensions,
 	setStatDimensions,
+	setPlayerDimensions,
 	clearHubSlice,
 } = hubSlice.actions;
 
