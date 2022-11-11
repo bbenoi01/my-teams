@@ -1,5 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+	FlatList,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+} from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 
 const NewsScreen = () => {
 	const { sport } = useSelector((state) => state.hub);
@@ -28,13 +35,33 @@ const NewsScreen = () => {
 			break;
 
 		default:
-			data = [];
+			data = null;
 			break;
 	}
 
 	return (
 		<View style={styles.canvas}>
-			<Text style={styles.txt}>News</Text>
+			<Text style={styles.txt}>{sport.toUpperCase()} News</Text>
+			{data ? (
+				<FlatList
+					data={data}
+					renderItem={({ item }) => (
+						<TouchableOpacity
+							onPress={() => WebBrowser.openBrowserAsync(`${item.Url}`)}
+						>
+							<View style={styles.block}>
+								<Text style={[styles.txt, styles.title]}>{item.Title}</Text>
+								<Text style={styles.txt} ellipsizeMode='tail' numberOfLines={5}>
+									{item.Content}
+								</Text>
+							</View>
+						</TouchableOpacity>
+					)}
+					keyExtractor={(item) => item.NewsID}
+				/>
+			) : (
+				<Text style={styles.txt}>No News</Text>
+			)}
 		</View>
 	);
 };
@@ -51,5 +78,18 @@ const styles = StyleSheet.create({
 	},
 	txt: {
 		color: '#94a1b2',
+	},
+	block: {
+		borderWidth: 1,
+		borderColor: '#94a1b2',
+		borderStyle: 'dotted',
+		borderRadius: 20,
+		padding: 20,
+		marginVertical: 10,
+	},
+	title: {
+		textAlign: 'center',
+		fontWeight: 'bold',
+		marginBottom: 10,
 	},
 });

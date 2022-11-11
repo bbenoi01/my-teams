@@ -63,6 +63,7 @@ export const AppNavigator = () => {
 			drawerStyle: {
 				backgroundColor: '#242629',
 			},
+			swipeEnabled: false,
 		};
 	};
 
