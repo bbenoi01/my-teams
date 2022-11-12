@@ -22,9 +22,6 @@ const initialState = hubAdapter.getInitialState({
 	players: null,
 	stats: null,
 	standings: null,
-	tabDimensions: null,
-	statDimensions: null,
-	playerDimensions: null,
 	errors: null,
 });
 
@@ -54,15 +51,6 @@ export const hubSlice = createSlice({
 			state.nhlFav = action.payload.split(', ')[0];
 			state.nhlFavKey = action.payload.split(', ')[1];
 		},
-		setTabDimensions: (state, action) => {
-			state.tabDimensions = action.payload;
-		},
-		setStatDimensions: (state, action) => {
-			state.statDimensions = action.payload;
-		},
-		setPlayerDimensions: (state, action) => {
-			state.playerDimensions = action.payload;
-		},
 		clearHubSlice: (state) => {
 			state.loading = false;
 			state.nflFav = null;
@@ -77,9 +65,6 @@ export const hubSlice = createSlice({
 			state.players = null;
 			state.stats = null;
 			state.standings = null;
-			state.tabDimensions = null;
-			state.statDimensions = null;
-			state.playerDimensions = null;
 			state.errors = null;
 		},
 	},
@@ -105,9 +90,6 @@ export const hubSlice = createSlice({
 				state.players = null;
 				state.stats = null;
 				state.standings = null;
-				state.tabDimensions = null;
-				state.statDimensions = null;
-				state.playerDimensions = null;
 				state.errors = null;
 			});
 	},
@@ -120,9 +102,6 @@ export const {
 	setNBAFav,
 	setMLBFav,
 	setNHLFav,
-	setTabDimensions,
-	setStatDimensions,
-	setPlayerDimensions,
 	clearHubSlice,
 } = hubSlice.actions;
 

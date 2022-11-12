@@ -1,6 +1,10 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { formatAge, formatHeight } from '../../../util/helpers';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
-const PlayerBlock = ({ item, dimensions }) => {
+const PlayerBlock = ({ item, dimensions, sport }) => {
 	return (
 		<View style={[styles.block, dimensions]}>
 			<Image
@@ -17,11 +21,15 @@ const PlayerBlock = ({ item, dimensions }) => {
 				</View>
 				<View style={styles.playerWrapper}>
 					<Text style={styles.txt}>Age:</Text>
-					<Text style={styles.txt}>{item.Age}</Text>
+					<Text style={styles.txt}>
+						{formatAge(dayjs(item.BirthDate).fromNow(true))}
+					</Text>
 				</View>
 				<View style={styles.playerWrapper}>
 					<Text style={styles.txt}>Height:</Text>
-					<Text style={styles.txt}>{item.Height}</Text>
+					<Text style={styles.txt}>
+						{sport === 'nfl' ? item.Height : formatHeight(item.Height)}
+					</Text>
 				</View>
 				<View style={styles.playerWrapper}>
 					<Text style={styles.txt}>Weight:</Text>

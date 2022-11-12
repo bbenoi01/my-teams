@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { setPlayerDimensions } from '../../../redux/slices/hubSlice';
+import { setPlayer } from '../../../redux/slices/measurementsSlice';
 import Loading from '../../../components/Loading';
 import PlayerBlock from '../components/PlayerBlock';
 
 const PlayersScreen = ({ navigation }) => {
-	const { loading, sport, playerDimensions } = useSelector(
+	const { loading, sport, nflFav, nbaFav, mlbFav, nhlFav } = useSelector(
 		(state) => state.hub
 	);
+	const { player } = useSelector((state) => state.measure);
 	const { nflPlayers } = useSelector((state) => state.nfl);
 	const { nbaPlayers } = useSelector((state) => state.nba);
 	const { mlbPlayers } = useSelector((state) => state.mlb);
@@ -18,30 +19,36 @@ const PlayersScreen = ({ navigation }) => {
 	const dispatch = useDispatch();
 
 	const blockDimensions = {
-		width: playerDimensions && playerDimensions.width - 40,
-		height: playerDimensions && playerDimensions.height / 2 - 30,
+		width: player && player.width - 40,
+		height: player && player.height / 2 - 30,
 	};
 
 	let data;
+	let team;
 	switch (sport) {
 		case 'nfl':
 			data = nflPlayers;
+			team = nflFav;
 			break;
 
 		case 'nba':
 			data = nbaPlayers;
+			team = nbaFav;
 			break;
 
 		case 'mlb':
 			data = mlbPlayers;
+			team = mlbFav;
 			break;
 
 		case 'nhl':
 			data = nhlPlayers;
+			team = nhlFav;
 			break;
 
 		default:
 			data = null;
+			team = null;
 			break;
 	}
 
@@ -49,28 +56,30 @@ const PlayersScreen = ({ navigation }) => {
 		childRef.current.measureLayout(
 			parentRef.current,
 			(left, top, width, height) => {
-				if (
-					!playerDimensions ||
-					(playerDimensions.width !== width &&
-						playerDimensions.height !== height)
-				) {
-					dispatch(setPlayerDimensions({ left, top, width, height }));
+				if (!player || (player.width !== width && player.height !== height)) {
+					dispatch(setPlayer({ left, top, width, height }));
 				}
 			}
 		);
-	}, [playerDimensions]);
+	}, [player]);
 
 	return (
 		<View style={styles.canvas} ref={parentRef}>
 			{loading && <Loading />}
-			<Text style={[styles.txt, styles.pageTitle]}>Players</Text>
+			<Text style={[styles.txt, styles.pageTitle]}>
+				{team && team + ' '}Players
+			</Text>
 			<View style={styles.listContainer} ref={childRef}>
 				{data ? (
 					<FlatList
 						style={styles.list}
 						data={data}
 						renderItem={({ item }) => (
-							<PlayerBlock item={item} dimensions={blockDimensions} />
+							<PlayerBlock
+								item={item}
+								dimensions={blockDimensions}
+								sport={sport}
+							/>
 						)}
 						keyExtractor={(item) => item.PlayerID}
 					/>

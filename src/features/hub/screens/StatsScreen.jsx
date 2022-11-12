@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { setStatDimensions } from '../../../redux/slices/hubSlice';
+import { setStats } from '../../../redux/slices/measurementsSlice';
 import Loading from '../../../components/Loading';
 import NFLBLock from '../components/NFLBLock';
 import NBABlock from '../components/NBABlock';
@@ -9,7 +9,8 @@ import MLBBlock from '../components/MLBBlock';
 import NHLBlock from '../components/NHLBlock';
 
 const StatsScreen = ({ navigation }) => {
-	const { loading, sport, statDimensions } = useSelector((state) => state.hub);
+	const { loading, sport } = useSelector((state) => state.hub);
+	const { stats } = useSelector((state) => state.measure);
 	const { nflStats } = useSelector((state) => state.nfl);
 	const { nbaStats } = useSelector((state) => state.nba);
 	const { mlbStats } = useSelector((state) => state.mlb);
@@ -38,8 +39,8 @@ const StatsScreen = ({ navigation }) => {
 	};
 
 	const blockDimensions = {
-		width: statDimensions && statDimensions.width - 40,
-		height: statDimensions && statDimensions.height / 2 - 30,
+		width: stats && stats.width - 40,
+		height: stats && stats.height / 2 - 30,
 	};
 
 	let data;
@@ -69,15 +70,12 @@ const StatsScreen = ({ navigation }) => {
 		childRef.current.measureLayout(
 			parentRef.current,
 			(left, top, width, height) => {
-				if (
-					!statDimensions ||
-					(statDimensions.width !== width && statDimensions.height !== height)
-				) {
-					dispatch(setStatDimensions({ left, top, width, height }));
+				if (!stats || (stats.width !== width && stats.height !== height)) {
+					dispatch(setStats({ left, top, width, height }));
 				}
 			}
 		);
-	}, [statDimensions]);
+	}, [stats]);
 
 	return (
 		<View style={styles.canvas} ref={parentRef}>
