@@ -99,15 +99,31 @@ export const getNFLStandings = createAsyncThunk(
 	}
 );
 
+export const getNFLSchedule = createAsyncThunk(
+	'nfl/get_schedule',
+	async (year, { rejectWithValue }) => {
+		try {
+			const res = await sportsApi.get(
+				`/nfl/scores/JSON/Scores/${year}?key=${NFL_API_KEY_}`
+			);
+			return res.data;
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
 export const nflAdapter = createEntityAdapter();
 const initialState = nflAdapter.getInitialState({
 	loading: false,
+	year: '',
 	nflTeam: null,
 	nflTeams: null,
 	nflNews: null,
 	nflPlayers: null,
 	nflStats: null,
 	nflStandings: null,
+	nflSchedule: [],
 	errors: null,
 });
 
@@ -115,6 +131,12 @@ export const nflSlice = createSlice({
 	name: 'nfl',
 	initialState,
 	reducers: {
+		setYear: (state, action) => {
+			state.year = action.payload;
+		},
+		setNFLTeam: (state, action) => {
+			state.nflTeam = action.payload;
+		},
 		clearNFLSlice: (state) => {
 			state.loading = false;
 			state.nflTeams = null;
@@ -190,6 +212,22 @@ export const nflSlice = createSlice({
 					state.errors = action.payload;
 				}
 			})
+			.addCase(getNFLSchedule.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getNFLSchedule.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nflSchedule = action.payload.filter(
+					(game) =>
+						game.HomeTeam === state.nflTeam.split(', ')[1] ||
+						game.AwayTeam === state.nflTeam.split(', ')[1]
+				);
+			})
+			.addCase(getNFLSchedule.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			})
 			.addCase(clearNFLSlice, (state) => {
 				nflAdapter.removeAll(state);
 			})
@@ -207,6 +245,6 @@ export const nflSlice = createSlice({
 	},
 });
 
-export const { clearNFLSlice } = nflSlice.actions;
+export const { setYear, setNFLTeam, clearNFLSlice } = nflSlice.actions;
 
 export default nflSlice.reducer;
