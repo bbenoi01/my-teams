@@ -103,10 +103,23 @@ export const getNFLSchedule = createAsyncThunk(
 	'nfl/get_schedule',
 	async (year, { rejectWithValue }) => {
 		try {
-			const res = await sportsApi.get(
+			const scoreRes = await sportsApi.get(
 				`/nfl/scores/JSON/Scores/${year}?key=${NFL_API_KEY_}`
 			);
-			return res.data;
+			const scheduleRes = await sportsApi.get(
+				`/nfl/scores/JSON/Schedules/${year}?key=${NFL_API_KEY_}`
+			);
+			let scores = scoreRes.data;
+			let schedule = scheduleRes.data;
+			schedule.forEach((game) => {
+				for (let i = 0; i < scores.length; i++) {
+					if (game.GameKey === scores[i].GameKey) {
+						game.HomeScore = scores[i].HomeScore;
+						game.AwayScore = scores[i].AwayScore;
+					}
+				}
+			});
+			return schedule;
 		} catch (err) {
 			return rejectWithValue(err.response.data);
 		}
@@ -140,6 +153,7 @@ export const nflSlice = createSlice({
 		clearNFLSlice: (state) => {
 			state.loading = false;
 			state.nflTeams = null;
+			state.nflSchedule = [];
 		},
 	},
 	extraReducers: (builder) => {
@@ -240,6 +254,7 @@ export const nflSlice = createSlice({
 				state.nflPlayers = null;
 				state.nflStats = null;
 				state.nflStandings = null;
+				state.nflSchedule = [];
 				state.errors = null;
 			});
 	},
