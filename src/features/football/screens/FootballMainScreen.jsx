@@ -12,28 +12,28 @@ import { setSchedule } from '../../../redux/slices/measurementsSlice';
 import {
 	setYear,
 	setNFLTeam,
+	getNFLStandings,
 	getNFLSchedule,
 } from '../../../redux/slices/nflSlice';
-import { optionMap } from '../../../util/helpers';
+import { optionMap, nameMap, recordMap, byeMap } from '../../../util/helpers';
 import MapView from 'react-native-maps';
 import dayjs from 'dayjs';
 import FullScreen from '../../../components/FullScreen';
 import Picker from '../../../components/Picker';
 
 const FootballMainScreen = () => {
-	const { sport } = useSelector((state) => state.hub);
+	const { nflFav, nflFavKey } = useSelector((state) => state.hub);
 	const { schedule } = useSelector((state) => state.measure);
-	const { nflTeams, nflTeam, year, nflSchedule } = useSelector(
+	const { nflStandings, nflTeams, nflTeam, year, nflSchedule } = useSelector(
 		(state) => state.nfl
 	);
 	const parentRef = useRef(null);
 	const childRef = useRef(null);
 	const dispatch = useDispatch();
-	let data = true;
 
 	const blockDimensions = {
 		width: schedule && schedule.width - 40,
-		height: schedule && schedule.height - 30,
+		height: schedule && schedule.height * 0.9,
 	};
 
 	let nflTeamOptions = [];
@@ -53,14 +53,19 @@ const FootballMainScreen = () => {
 				}
 			}
 		);
-	}, [schedule]);
+		if (!nflStandings) {
+			dispatch(getNFLStandings());
+		}
+	}, [schedule, nflStandings]);
 
 	return (
 		<FullScreen img={require('../../../../assets/nflBackground.jpg')}>
 			<View style={styles.canvas} ref={parentRef}>
 				<View style={styles.header}>
-					<Text style={styles.txt}>Fav Team: Raiders</Text>
-					<Text style={styles.txt}>Current Record: 2-6-0</Text>
+					<Text style={styles.txt}>Fav Team: {nflFav && nflFav}</Text>
+					<Text style={styles.txt}>
+						Current Record: {nflFavKey && recordMap(nflFavKey, nflStandings)}
+					</Text>
 				</View>
 				<View style={styles.searchContainer}>
 					<View style={styles.searchInputContainer}>
@@ -86,95 +91,89 @@ const FootballMainScreen = () => {
 					/>
 				</View>
 				<View style={styles.listContainer} ref={childRef}>
-					{data ? (
+					{nflSchedule ? (
 						<FlatList
 							data={nflSchedule}
-							renderItem={({ item }) =>
-								item.AwayTeam === 'BYE' ? (
-									<View
-										style={[
-											styles.test,
-											blockDimensions,
-											{
-												borderWidth: 1,
-												borderColor: 'white',
-												justifyContent: 'center',
-												alignItems: 'center',
-											},
-										]}
-									>
-										<View style={styles.week}>
-											<Text style={{ color: 'whitesmoke' }}>
-												Week: {item.Week}
-											</Text>
-										</View>
-										<Text style={styles.txt}>BYE Week</Text>
+							renderItem={({ item }) => (
+								<View style={[styles.block, blockDimensions]}>
+									<View style={styles.weekContainer}>
+										<Text style={[styles.txt, styles.blockTxt]}>
+											Week: {item.Week}
+										</Text>
 									</View>
-								) : (
-									<View
-										style={[
-											styles.test,
-											blockDimensions,
-											{ borderWidth: 1, borderColor: 'white' },
-										]}
-									>
-										<View style={styles.week}>
-											<Text style={{ color: 'whitesmoke' }}>
-												Week: {item.Week}
-											</Text>
-										</View>
-										<View style={styles.date}>
-											<Text style={styles.txt}>
-												Date: {dayjs(item.Date).format('MM/D/YYYY')}
-											</Text>
-										</View>
-										<View style={styles.scoreContainer}>
-											<View style={styles.homeScore}>
-												<Text style={styles.txt}>{item.HomeTeam}</Text>
-												<Text style={styles.txt}>{item.HomeScore}</Text>
-											</View>
-											<View style={styles.awayScore}>
-												<Text style={styles.txt}>{item.AwayTeam}</Text>
-												<Text style={styles.txt}>{item.AwayScore}</Text>
-											</View>
-										</View>
-										<View style={styles.forcastContainer}>
-											<Text style={styles.txt}>
-												Forecast: {item.ForecastDescription}
-											</Text>
-										</View>
-										<MapView
-											style={styles.mapContainer}
-											region={{
-												latitude: item.StadiumDetails.GeoLat,
-												longitude: item.StadiumDetails.GeoLong,
-												latitudeDelta: 0.004757,
-												longitudeDelta: 0.006866,
-											}}
-											provider='google'
-											mapType='satellite'
-											rotateEnabled={false}
-											scrollEnabled={false}
-											pitchEnabled={false}
-										></MapView>
+									<View style={styles.dateContainer}>
+										<Text style={[styles.txt, styles.blockTxt]}>
+											{item.AwayTeam === 'BYE'
+												? 'BYE WEEK'
+												: `Date: ${dayjs(item.Date).format('M/D/YYYY')}`}
+										</Text>
 									</View>
-								)
-							}
+									<View style={styles.scoreContainer}>
+										{item.AwayTeam !== 'BYE' && (
+											<>
+												<View style={styles.score}>
+													<Text style={[styles.txt, styles.scoreTxt]}>
+														Away:
+													</Text>
+													<Text style={[styles.txt, styles.scoreTxt]}>
+														{item.AwayScore ? item.AwayScore : 'TBD'}
+													</Text>
+													<Text style={[styles.txt, styles.scoreTxt]}>
+														{nameMap(item.AwayTeam, nflTeams)}
+													</Text>
+												</View>
+												<View style={styles.centerContainer}>
+													<Text style={[styles.txt, styles.centerTxt]}>@</Text>
+												</View>
+												<View style={styles.score}>
+													<Text style={[styles.txt, styles.scoreTxt]}>
+														Home:
+													</Text>
+													<Text style={[styles.txt, styles.scoreTxt]}>
+														{item.HomeScore ? item.HomeScore : 'TBD'}
+													</Text>
+													<Text style={[styles.txt, styles.scoreTxt]}>
+														{nameMap(item.HomeTeam, nflTeams)}
+													</Text>
+												</View>
+											</>
+										)}
+									</View>
+									<View style={styles.forcastContainer}>
+										<Text style={[styles.txt, styles.blockTxt]}>
+											Forecast:{' '}
+											{item.ForecastDescription
+												? item.ForecastDescription
+												: 'TBA'}
+										</Text>
+									</View>
+									<MapView
+										style={styles.mapContainer}
+										region={{
+											latitude:
+												item.AwayTeam === 'BYE'
+													? byeMap(item.HomeTeam, nflTeams).latitude
+													: item.StadiumDetails.GeoLat,
+											longitude:
+												item.AwayTeam === 'BYE'
+													? byeMap(item.HomeTeam, nflTeams).longitude
+													: item.StadiumDetails.GeoLong,
+											latitudeDelta: 0.004757,
+											longitudeDelta: 0.006866,
+										}}
+										provider='google'
+										mapType='satellite'
+										rotateEnabled={false}
+										scrollEnabled={false}
+										pitchEnabled={false}
+									></MapView>
+								</View>
+							)}
 							keyExtractor={(item) => item.GameKey}
 							horizontal
+							showsHorizontalScrollIndicator={false}
 						/>
 					) : (
-						// <>
-						// <View
-						// 	style={[
-						// 		styles.test,
-						// 		blockDimensions,
-						// 		{ borderWidth: 1, borderColor: 'white' },
-						// 	]}
-						// >
-						// 	<Text style={{ color: 'whitesmoke' }}>Flat List</Text>
-						// </View>
-						// </>
 						<Text>No Schedule</Text>
 					)}
 				</View>
@@ -189,8 +188,6 @@ const styles = StyleSheet.create({
 	canvas: {
 		flex: 1,
 		padding: 20,
-		// justifyContent: 'center',
-		// alignContent: 'center',
 	},
 	header: {
 		height: 50,
@@ -217,51 +214,79 @@ const styles = StyleSheet.create({
 	},
 	listContainer: {
 		flex: 1,
-		borderWidth: 2,
-		borderColor: 'rebeccapurple',
+		// padding: 10,
+		// borderWidth: 1,
+		// borderColor: 'indigo',
 	},
 
-	test: {
-		backgroundColor: 'indigo',
-		marginVertical: 10,
+	block: {
+		alignSelf: 'center',
+		backgroundColor: '#242629e8',
+		marginVertical: 2.5,
 		marginHorizontal: 15,
-		// justifyContent: 'center',
-		// alignItems: 'center',
+		borderWidth: 1,
+		borderColor: '#94a1b2',
 	},
 
-	week: {
-		padding: 10,
+	blockTxt: {
+		fontWeight: 'bold',
+	},
+
+	weekContainer: {
+		padding: 5,
 		alignItems: 'center',
 		borderBottomWidth: 2,
-		borderColor: 'whitesmoke',
+		borderBottomColor: 'rgb(148,161,178)',
 	},
 
-	date: {
-		padding: 10,
+	dateContainer: {
+		// padding: 5,
+		// justifyContent: 'center',
 		alignItems: 'center',
+		marginVertical: 5,
+		// borderWidth: 1,
+		// borderColor: 'green',
 	},
 
 	scoreContainer: {
 		flexDirection: 'row',
 		justifyContent: 'space-around',
+		marginVertical: 5,
 	},
 
-	homeScore: {
-		height: 50,
-		borderWidth: 1,
+	score: {
+		flex: 5,
+		height: 75,
+		justifyContent: 'space-between',
+		alignItems: 'center',
 	},
 
-	awayScore: {
-		height: 50,
-		borderWidth: 1,
+	scoreTxt: {
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
+
+	centerContainer: {
+		flex: 2,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+
+	centerTxt: {
+		fontSize: 25,
+		fontWeight: 'bold',
 	},
 
 	forcastContainer: {
-		padding: 10,
+		padding: 5,
 		alignItems: 'center',
+		marginVertical: 5,
+		borderTopWidth: 2,
+		borderTopColor: 'rgb(148,161,178)',
 	},
 
 	mapContainer: {
 		flex: 1,
+		// marginTop: 5,
 	},
 });

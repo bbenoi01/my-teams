@@ -8,6 +8,33 @@ export const optionMap = (arr, newArr) => {
 	});
 };
 
+export const nameMap = (key, arr) => {
+	for (let i = 0; i < arr.length; i++) {
+		if (key === arr[i].Key) {
+			return arr[i].Name;
+		}
+	}
+};
+
+export const recordMap = (key, arr) => {
+	for (let i = 0; i < arr.length; i++) {
+		if (key === arr[i].Team) {
+			return `${arr[i].Wins}-${arr[i].Losses}-${arr[i].Ties}`;
+		}
+	}
+};
+
+export const byeMap = (key, arr) => {
+	for (let i = 0; i < arr.length; i++) {
+		if (key === arr[i].Key) {
+			return {
+				latitude: arr[i].StadiumDetails.GeoLat,
+				longitude: arr[i].StadiumDetails.GeoLong,
+			};
+		}
+	}
+};
+
 export const formatAge = (string) => {
 	const age = string.split(' ')[0];
 	return age;
