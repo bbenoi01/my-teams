@@ -87,8 +87,8 @@ const HubScreen = ({ navigation }) => {
 			case 'nfl':
 				!nflNews && dispatch(getNFLNews());
 				!nflPlayers && dispatch(getNFLFavTeamPlayers(nflFavKey));
-				!nflStats && dispatch(getNFLTeamStats());
-				!nflStandings && dispatch(getNFLStandings());
+				!nflStats && dispatch(getNFLTeamStats(nflTeams));
+				!nflStandings && dispatch(getNFLStandings(nflTeams));
 				break;
 
 			case 'nba':

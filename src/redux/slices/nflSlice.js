@@ -51,20 +51,29 @@ export const getNFLFavTeamPlayers = createAsyncThunk(
 
 export const getNFLTeamStats = createAsyncThunk(
 	'nfl/get_team_stats',
-	async (nflData, { rejectWithValue }) => {
+	async (teams, { rejectWithValue }) => {
 		try {
-			const season = await sportsApi.get(
+			const seasonRes = await sportsApi.get(
 				`/nfl/scores/json/CurrentSeason?key=${NFL_API_KEY_}`
 			);
-			const res = await sportsApi.get(
-				`/nfl/scores/json/TeamSeasonStats/${season.data}?key=${NFL_API_KEY_}`
+			const statRes = await sportsApi.get(
+				`/nfl/scores/json/TeamSeasonStats/${seasonRes.data}?key=${NFL_API_KEY_}`
 			);
-			return res.data;
+			let stats = statRes.data;
+			stats.forEach((item) => {
+				for (let i = 0; i < teams.length; i++) {
+					if (item.Team === teams[i].Key) {
+						item.Logo = teams[i].WikipediaLogoUrl;
+					}
+				}
+			});
+
+			return stats;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
 				const retry = await sportsApi.get(
 					`nfl/scores/json/TeamSeasonStats/${
-						season.data - 1
+						seasonRes.data - 1
 					}?key=${NFL_API_KEY_}`
 				);
 				return { code: err.response.data.Code, retryRes: retry.data };
@@ -77,19 +86,28 @@ export const getNFLTeamStats = createAsyncThunk(
 
 export const getNFLStandings = createAsyncThunk(
 	'nfl/get_standings',
-	async (nflData, { rejectWithValue }) => {
+	async (teams, { rejectWithValue }) => {
 		try {
-			const season = await sportsApi.get(
+			const seasonRes = await sportsApi.get(
 				`/nfl/scores/json/CurrentSeason?key=${NFL_API_KEY_}`
 			);
-			const res = await sportsApi.get(
-				`/nfl/scores/json/Standings/${season.data}?key=${NFL_API_KEY_}`
+			const standingRes = await sportsApi.get(
+				`/nfl/scores/json/Standings/${seasonRes.data}?key=${NFL_API_KEY_}`
 			);
-			return res.data;
+			let standings = standingRes.data;
+			standings.forEach((item) => {
+				for (let i = 0; i < teams.length; i++) {
+					if (item.Team === teams[i].Key) {
+						item.Logo = teams[i].WikipediaLogoUrl;
+					}
+				}
+			});
+
+			return standings;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
 				const retry = await sportsApi.get(
-					`/nfl/scores/json/Standings/${season.data - 1}?key=${NFL_API_KEY_}`
+					`/nfl/scores/json/Standings/${seasonRes.data - 1}?key=${NFL_API_KEY_}`
 				);
 				return { code: err.response.data.Code, retryRes: retry.data };
 			} else {
