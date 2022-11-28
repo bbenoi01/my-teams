@@ -1,11 +1,10 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { SvgUri } from 'react-native-svg';
 
 const StandingsBlock = ({ item, dimensions }) => {
 	return (
 		<View style={[styles.block, dimensions]}>
 			<View style={styles.logoContainer}>
-				<SvgUri width='75' height='75' uri={item.Logo} />
+				<Image style={styles.logo} source={item.Logo} />
 			</View>
 			<View style={styles.wrapper}>
 				{item.City && <Text style={styles.txt}>{item.City}</Text>}
@@ -61,12 +60,16 @@ const styles = StyleSheet.create({
 		backgroundColor: '#232629',
 	},
 	logoContainer: {
+		width: 100,
+		height: 100,
 		borderRadius: 100,
 		borderWidth: 1,
-		padding: 15,
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: 'black',
+	},
+	logo: {
+		width: 75,
 	},
 	txt: {
 		color: '#94a1b2',

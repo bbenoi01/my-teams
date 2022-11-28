@@ -7,12 +7,14 @@ dayjs.extend(relativeTime);
 const PlayerBlock = ({ item, dimensions, sport }) => {
 	return (
 		<View style={[styles.block, dimensions]}>
-			<Image
-				style={styles.img}
-				source={{
-					uri: item.PhotoUrl,
-				}}
-			/>
+			<View style={styles.imgContainer}>
+				<Image
+					style={styles.img}
+					source={{
+						uri: item.PhotoUrl,
+					}}
+				/>
+			</View>
 			<Text style={styles.txt}>{item.FirstName + ' ' + item.LastName}</Text>
 			<View style={styles.playersContainer}>
 				<View style={styles.playerWrapper}>
@@ -58,11 +60,19 @@ const styles = StyleSheet.create({
 		marginVertical: 10,
 		backgroundColor: '#232629',
 	},
+	imgContainer: {
+		width: 100,
+		height: 100,
+		borderRadius: 100,
+		borderWidth: 1,
+		borderColor: 'silver',
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'black',
+	},
 	img: {
 		width: 60,
 		height: 60,
-		borderRadius: 50,
-		borderWidth: 1,
 	},
 	txt: {
 		color: '#94a1b2',

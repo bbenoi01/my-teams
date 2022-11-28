@@ -5,6 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
 import { NFL_API_KEY_ } from '@env';
+import { nflLogos } from '../../data';
 import sportsApi from '../../api/sportsApi';
 
 export const getNFLTeams = createAsyncThunk(
@@ -61,9 +62,9 @@ export const getNFLTeamStats = createAsyncThunk(
 			);
 			let stats = statRes.data;
 			stats.forEach((item) => {
-				for (let i = 0; i < teams.length; i++) {
-					if (item.Team === teams[i].Key) {
-						item.Logo = teams[i].WikipediaLogoUrl;
+				for (let i = 0; i < nflLogos.length; i++) {
+					if (item.Team === nflLogos[i].key) {
+						item.Logo = nflLogos[i].logoUrl;
 					}
 				}
 			});
@@ -71,12 +72,20 @@ export const getNFLTeamStats = createAsyncThunk(
 			return stats;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
-				const retry = await sportsApi.get(
+				const retryRes = await sportsApi.get(
 					`nfl/scores/json/TeamSeasonStats/${
 						seasonRes.data - 1
 					}?key=${NFL_API_KEY_}`
 				);
-				return { code: err.response.data.Code, retryRes: retry.data };
+				let retry = retryRes.data;
+				retry.forEach((item) => {
+					for (let i = 0; i < nflLogos.length; i++) {
+						if (item.Team === nflLogos[i].key) {
+							item.Logo = nflLogos[i].logoUrl;
+						}
+					}
+				});
+				return { code: err.response.data.Code, retryRes: retry };
 			} else {
 				return rejectWithValue(err.response.data);
 			}
@@ -96,9 +105,9 @@ export const getNFLStandings = createAsyncThunk(
 			);
 			let standings = standingRes.data;
 			standings.forEach((item) => {
-				for (let i = 0; i < teams.length; i++) {
-					if (item.Team === teams[i].Key) {
-						item.Logo = teams[i].WikipediaLogoUrl;
+				for (let i = 0; i < nflLogos.length; i++) {
+					if (item.Team === nflLogos[i].key) {
+						item.Logo = nflLogos[i].logoUrl;
 					}
 				}
 			});
@@ -106,10 +115,18 @@ export const getNFLStandings = createAsyncThunk(
 			return standings;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
-				const retry = await sportsApi.get(
+				const retryRes = await sportsApi.get(
 					`/nfl/scores/json/Standings/${seasonRes.data - 1}?key=${NFL_API_KEY_}`
 				);
-				return { code: err.response.data.Code, retryRes: retry.data };
+				let retry = retryRes.data;
+				retry.forEach((item) => {
+					for (let i = 0; i < nflLogos.length; i++) {
+						if (item.Team === nflLogos[i].key) {
+							item.Logo = nflLogos[i].logoUrl;
+						}
+					}
+				});
+				return { code: err.response.data.Code, retryRes: retry };
 			} else {
 				return rejectWithValue(err.response.data);
 			}
