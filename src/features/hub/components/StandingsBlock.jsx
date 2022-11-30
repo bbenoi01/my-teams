@@ -4,7 +4,7 @@ const StandingsBlock = ({ item, dimensions }) => {
 	return (
 		<View style={[styles.block, dimensions]}>
 			<View style={styles.logoContainer}>
-				<Image style={styles.logo} source={item.Logo} />
+				<Image style={styles.logo} source={item.Logo} resizeMode='contain' />
 			</View>
 			<View style={styles.wrapper}>
 				{item.City && <Text style={styles.txt}>{item.City}</Text>}
@@ -69,8 +69,7 @@ const styles = StyleSheet.create({
 		backgroundColor: 'black',
 	},
 	logo: {
-		width: 75,
-		height: 75,
+		width: 100,
 		borderRadius: 100,
 	},
 	txt: {

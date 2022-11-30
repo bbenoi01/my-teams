@@ -3,10 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { setStats } from '../../../redux/slices/measurementsSlice';
 import Loading from '../../../components/Loading';
-import NFLBLock from '../components/NFLBLock';
-import NBABlock from '../components/NBABlock';
-import MLBBlock from '../components/MLBBlock';
-import NHLBlock from '../components/NHLBlock';
+import StatBLock from '../components/StatBLock';
 
 const StatsScreen = ({ navigation }) => {
 	const { loading, sport } = useSelector((state) => state.hub);
@@ -18,25 +15,6 @@ const StatsScreen = ({ navigation }) => {
 	const parentRef = useRef(null);
 	const childRef = useRef(null);
 	const dispatch = useDispatch();
-
-	const blockToRender = (item) => {
-		switch (sport) {
-			case 'nfl':
-				return <NFLBLock item={item} dimensions={blockDimensions} />;
-				break;
-			case 'nba':
-				return <NBABlock item={item} dimensions={blockDimensions} />;
-				break;
-			case 'mlb':
-				return <MLBBlock item={item} dimensions={blockDimensions} />;
-				break;
-			case 'nhl':
-				return <NHLBlock item={item} dimensions={blockDimensions} />;
-				break;
-			default:
-				break;
-		}
-	};
 
 	const blockDimensions = {
 		width: stats && stats.width - 40,
@@ -86,7 +64,9 @@ const StatsScreen = ({ navigation }) => {
 					<FlatList
 						style={styles.list}
 						data={data}
-						renderItem={({ item }) => blockToRender(item)}
+						renderItem={({ item }) => (
+							<StatBLock item={item} dimensions={blockDimensions} />
+						)}
 						keyExtractor={(item) => item.Team}
 					/>
 				) : (

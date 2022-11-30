@@ -82,8 +82,6 @@ export const getNBATeamStats = createAsyncThunk(
 					for (let i = 0; i < nbaLogos.length; i++) {
 						if (item.Team === nbaLogos[i].key) {
 							item.Logo = nbaLogos[i].logoUrl;
-						} else {
-							item.Logo = require('../../../assets/nbaLogos/smile.jpg');
 						}
 					}
 				});
@@ -127,8 +125,6 @@ export const getNBAStandings = createAsyncThunk(
 					for (let i = 0; i < nbaLogos.length; i++) {
 						if (item.Team === nbaLogos[i].key) {
 							item.Logo = nbaLogos[i].logoUrl;
-						} else {
-							item.Logo = require('../../../assets/nbaLogos/smile.jpg');
 						}
 					}
 				});

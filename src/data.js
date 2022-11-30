@@ -117,7 +117,7 @@ export const nflLogos = [
 	},
 	{
 		key: 'TB',
-		logoUrl: require('../assets/nflLogos/bucks.png'),
+		logoUrl: require('../assets/nflLogos/bucs.png'),
 	},
 	{
 		key: 'TEN',
@@ -134,34 +134,34 @@ export const nbaLogos = [
 		key: 'WAS',
 		logoUrl: require('../assets/nbaLogos/wizards.png'),
 	},
-	// {
-	// 	key: 'CHA',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
+	{
+		key: 'CHA',
+		logoUrl: require('../assets/nbaLogos/hornets.png'),
+	},
 	{
 		key: 'ATL',
 		logoUrl: require('../assets/nbaLogos/hawks.png'),
 	},
-	// {
-	// 	key: 'MIA',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'ORL',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'NY',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
+	{
+		key: 'MIA',
+		logoUrl: require('../assets/nbaLogos/heat.png'),
+	},
+	{
+		key: 'ORL',
+		logoUrl: require('../assets/nbaLogos/magic.png'),
+	},
+	{
+		key: 'NY',
+		logoUrl: require('../assets/nbaLogos/knicks.png'),
+	},
 	{
 		key: 'PHI',
 		logoUrl: require('../assets/nbaLogos/76ers.png'),
 	},
-	// {
-	// 	key: 'BKN',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
+	{
+		key: 'BKN',
+		logoUrl: require('../assets/nbaLogos/nets.png'),
+	},
 	{
 		key: 'BOS',
 		logoUrl: require('../assets/nbaLogos/celtics.png'),
@@ -190,18 +190,18 @@ export const nbaLogos = [
 		key: 'MIL',
 		logoUrl: require('../assets/nbaLogos/bucks.png'),
 	},
-	// {
-	// 	key: 'MIN',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'UTA',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'OKC',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
+	{
+		key: 'MIN',
+		logoUrl: require('../assets/nbaLogos/grizzlies.png'),
+	},
+	{
+		key: 'UTA',
+		logoUrl: require('../assets/nbaLogos/jazz.png'),
+	},
+	{
+		key: 'OKC',
+		logoUrl: require('../assets/nbaLogos/thunder.png'),
+	},
 	{
 		key: 'POR',
 		logoUrl: require('../assets/nbaLogos/blazers.png'),
@@ -218,36 +218,36 @@ export const nbaLogos = [
 		key: 'HOU',
 		logoUrl: require('../assets/nbaLogos/rockets.png'),
 	},
-	// {
-	// 	key: 'NO',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'SA',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'DAL',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'GS',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'LAL',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'LAC',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'PHO',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
-	// {
-	// 	key: 'SAC',
-	// 	logoUrl: require('../assets/nbaLogos/'),
-	// },
+	{
+		key: 'NO',
+		logoUrl: require('../assets/nbaLogos/pelicans.png'),
+	},
+	{
+		key: 'SA',
+		logoUrl: require('../assets/nbaLogos/spurs.png'),
+	},
+	{
+		key: 'DAL',
+		logoUrl: require('../assets/nbaLogos/mavs.png'),
+	},
+	{
+		key: 'GS',
+		logoUrl: require('../assets/nbaLogos/worriors.png'),
+	},
+	{
+		key: 'LAL',
+		logoUrl: require('../assets/nbaLogos/lakers.png'),
+	},
+	{
+		key: 'LAC',
+		logoUrl: require('../assets/nbaLogos/clippers.png'),
+	},
+	{
+		key: 'PHO',
+		logoUrl: require('../assets/nbaLogos/suns.png'),
+	},
+	{
+		key: 'SAC',
+		logoUrl: require('../assets/nbaLogos/kings.png'),
+	},
 ];
