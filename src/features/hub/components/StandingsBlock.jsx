@@ -7,7 +7,7 @@ const StandingsBlock = ({ item, dimensions }) => {
 				<Image style={styles.logo} source={item.Logo} resizeMode='contain' />
 			</View>
 			<View style={styles.wrapper}>
-				{item.City && <Text style={styles.txt}>{item.City}</Text>}
+				{item.City && <Text style={styles.txt}>{item.City} </Text>}
 				<Text style={styles.txt}>{item.Name}</Text>
 			</View>
 			<View style={styles.wrapper}>

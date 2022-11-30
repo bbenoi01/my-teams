@@ -5,6 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
 import { MLB_API_KEY_ } from '@env';
+import { mlbLogos } from '../../data';
 import sportsApi from '../../api/sportsApi';
 
 export const getMLBTeams = createAsyncThunk(
@@ -56,18 +57,35 @@ export const getMLBTeamStats = createAsyncThunk(
 			const season = await sportsApi.get(
 				`/mlb/scores/json/CurrentSeason?key=${MLB_API_KEY_}`
 			);
-			const res = await sportsApi.get(
+			const statRes = await sportsApi.get(
 				`/mlb/scores/json/TeamSeasonStats/${season.data.Season}?key=${MLB_API_KEY_}`
 			);
-			return res.data;
+			let stats = statRes.data;
+			stats.forEach((item) => {
+				for (let i = 0; i < mlbLogos.length; i++) {
+					if (item.Team === mlbLogos[i].key) {
+						item.Logo = mlbLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return stats;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
-				const retry = await sportsApi.get(
+				const retryRes = await sportsApi.get(
 					`/mlb/scores/json/TeamSeasonStats/${
 						season.data.Season - 1
 					}?key=${MLB_API_KEY_}`
 				);
-				return { code: err.response.data.Code, retryRes: retry.data };
+				let retry = retryRes.data;
+				retry.forEach((item) => {
+					for (let i = 0; i < mlbLogos.length; i++) {
+						if (item.Team === mlbLogos[i].key) {
+							item.Logo = mlbLogos[i].logoUrl;
+						}
+					}
+				});
+				return { code: err.response.data.Code, retryRes: retry };
 			} else {
 				return rejectWithValue(err.response.data);
 			}
@@ -82,18 +100,35 @@ export const getMLBStandings = createAsyncThunk(
 			const season = await sportsApi.get(
 				`/mlb/scores/json/CurrentSeason?key=${MLB_API_KEY_}`
 			);
-			const res = await sportsApi.get(
+			const standingsRes = await sportsApi.get(
 				`/mlb/scores/json/Standings/${season.data.Season}?key=${MLB_API_KEY_}`
 			);
-			return res.data;
+			let standings = standingsRes.data;
+			standings.forEach((item) => {
+				for (let i = 0; i < mlbLogos.length; i++) {
+					if (item.Key === mlbLogos[i].key) {
+						item.Logo = mlbLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return standings;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
-				const retry = await sportsApi.get(
+				const retryRes = await sportsApi.get(
 					`/mlb/scores/json/Standings/${
 						season.data.Season - 1
 					}?key=${MLB_API_KEY_}`
 				);
-				return { code: err.response.data.Code, retryRes: retry.data };
+				let retry = retryRes.data;
+				retry.forEach((item) => {
+					for (let i = 0; i < mlbLogos.length; i++) {
+						if (item.Key === mlbLogos[i].key) {
+							item.Logo = mlbLogos[i].logoUrl;
+						}
+					}
+				});
+				return { code: err.response.data.Code, retryRes: retry };
 			} else {
 				return rejectWithValue(err.response.data);
 			}

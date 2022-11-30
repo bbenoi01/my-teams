@@ -5,6 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
 import { NHL_API_KEY_ } from '@env';
+import { nhlLogos } from '../../data';
 import sportsApi from '../../api/sportsApi';
 
 export const getNHLTeams = createAsyncThunk(
@@ -56,18 +57,35 @@ export const getNHLTeamStats = createAsyncThunk(
 			const season = await sportsApi.get(
 				`/nhl/scores/json/CurrentSeason?key=${NHL_API_KEY_}`
 			);
-			const res = await sportsApi.get(
+			const statRes = await sportsApi.get(
 				`/nhl/scores/json/TeamSeasonStats/${season.data.Season}?key=${NHL_API_KEY_}`
 			);
-			return res.data;
+			let stats = statRes.data;
+			stats.forEach((item) => {
+				for (let i = 0; i < nhlLogos.length; i++) {
+					if (item.Team === nhlLogos[i].key) {
+						item.Logo = nhlLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return stats;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
-				const retry = await sportsApi.get(
+				const retryRes = await sportsApi.get(
 					`/nhl/scores/json/TeamSeasonStats/${
 						season.data.Season - 1
 					}?key=${NHL_API_KEY_}`
 				);
-				return { code: err.response.data.Code, retryRes: retry.data };
+				let retry = retryRes.data;
+				retry.forEach((item) => {
+					for (let i = 0; i < nhlLogos.length; i++) {
+						if (item.Team === nhlLogos[i].key) {
+							item.Logo = nhlLogos[i].logoUrl;
+						}
+					}
+				});
+				return { code: err.response.data.Code, retryRes: retry };
 			} else {
 				return rejectWithValue(err.response.data);
 			}
@@ -82,18 +100,35 @@ export const getNHLStandings = createAsyncThunk(
 			const season = await sportsApi.get(
 				`/nhl/scores/json/CurrentSeason?key=${NHL_API_KEY_}`
 			);
-			const res = await sportsApi.get(
+			const standingsRes = await sportsApi.get(
 				`/nhl/scores/json/Standings/${season.data.Season}?key=${NHL_API_KEY_}`
 			);
-			return res.data;
+			let standings = standingsRes.data;
+			standings.forEach((item) => {
+				for (let i = 0; i < nhlLogos.length; i++) {
+					if (item.Key === nhlLogos[i].key) {
+						item.Logo = nhlLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return standings;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
-				const retry = await sportsApi.get(
+				const retryRes = await sportsApi.get(
 					`/nhl/scores/json/Standings/${
 						season.data.Season - 1
 					}?key=${NHL_API_KEY_}`
 				);
-				return { code: err.response.data.Code, retryRes: retry.data };
+				let retry = retryRes.data;
+				retry.forEach((item) => {
+					for (let i = 0; i < nhlLogos.length; i++) {
+						if (item.Key === nhlLogos[i].key) {
+							item.Logo = nhlLogos[i].logoUrl;
+						}
+					}
+				});
+				return { code: err.response.data.Code, retryRes: retry };
 			} else {
 				return rejectWithValue(err.response.data);
 			}
