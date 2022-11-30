@@ -132,122 +132,122 @@ export const nflLogos = [
 export const nbaLogos = [
 	{
 		key: 'WAS',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/wizards.png'),
 	},
-	{
-		key: 'CHA',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
+	// {
+	// 	key: 'CHA',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
 	{
 		key: 'ATL',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/hawks.png'),
 	},
-	{
-		key: 'MIA',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'ORL',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'NY',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
+	// {
+	// 	key: 'MIA',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'ORL',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'NY',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
 	{
 		key: 'PHI',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/76ers.png'),
 	},
-	{
-		key: 'BKN',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
+	// {
+	// 	key: 'BKN',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
 	{
 		key: 'BOS',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/celtics.png'),
 	},
 	{
 		key: 'TOR',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/raptors.png'),
 	},
 	{
 		key: 'CHI',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/bulls.png'),
 	},
 	{
 		key: 'CLE',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/cavs.png'),
 	},
 	{
 		key: 'IND',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/pacers.png'),
 	},
 	{
 		key: 'DET',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/pistons.png'),
 	},
 	{
 		key: 'MIL',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/bucks.png'),
 	},
-	{
-		key: 'MIN',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'UTA',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'OKC',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
+	// {
+	// 	key: 'MIN',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'UTA',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'OKC',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
 	{
 		key: 'POR',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/blazers.png'),
 	},
 	{
 		key: 'DEN',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/nuggets.png'),
 	},
 	{
 		key: 'MEM',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/grizzlies.png'),
 	},
 	{
 		key: 'HOU',
-		logoUrl: require('../assets/nbaLogos/'),
+		logoUrl: require('../assets/nbaLogos/rockets.png'),
 	},
-	{
-		key: 'NO',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'SA',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'DAL',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'GS',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'LAL',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'LAC',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'PHO',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
-	{
-		key: 'SAC',
-		logoUrl: require('../assets/nbaLogos/'),
-	},
+	// {
+	// 	key: 'NO',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'SA',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'DAL',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'GS',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'LAL',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'LAC',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'PHO',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
+	// {
+	// 	key: 'SAC',
+	// 	logoUrl: require('../assets/nbaLogos/'),
+	// },
 ];

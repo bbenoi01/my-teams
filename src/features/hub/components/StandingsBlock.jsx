@@ -70,6 +70,8 @@ const styles = StyleSheet.create({
 	},
 	logo: {
 		width: 75,
+		height: 75,
+		borderRadius: 100,
 	},
 	txt: {
 		color: '#94a1b2',

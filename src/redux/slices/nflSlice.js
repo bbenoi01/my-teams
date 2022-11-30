@@ -54,11 +54,11 @@ export const getNFLTeamStats = createAsyncThunk(
 	'nfl/get_team_stats',
 	async (teams, { rejectWithValue }) => {
 		try {
-			const seasonRes = await sportsApi.get(
+			const season = await sportsApi.get(
 				`/nfl/scores/json/CurrentSeason?key=${NFL_API_KEY_}`
 			);
 			const statRes = await sportsApi.get(
-				`/nfl/scores/json/TeamSeasonStats/${seasonRes.data}?key=${NFL_API_KEY_}`
+				`/nfl/scores/json/TeamSeasonStats/${season.data}?key=${NFL_API_KEY_}`
 			);
 			let stats = statRes.data;
 			stats.forEach((item) => {
@@ -73,8 +73,8 @@ export const getNFLTeamStats = createAsyncThunk(
 		} catch (err) {
 			if (err.response.data.Code === 401) {
 				const retryRes = await sportsApi.get(
-					`nfl/scores/json/TeamSeasonStats/${
-						seasonRes.data - 1
+					`/nfl/scores/json/TeamSeasonStats/${
+						season.data - 1
 					}?key=${NFL_API_KEY_}`
 				);
 				let retry = retryRes.data;
@@ -97,13 +97,13 @@ export const getNFLStandings = createAsyncThunk(
 	'nfl/get_standings',
 	async (teams, { rejectWithValue }) => {
 		try {
-			const seasonRes = await sportsApi.get(
+			const season = await sportsApi.get(
 				`/nfl/scores/json/CurrentSeason?key=${NFL_API_KEY_}`
 			);
-			const standingRes = await sportsApi.get(
-				`/nfl/scores/json/Standings/${seasonRes.data}?key=${NFL_API_KEY_}`
+			const standingsRes = await sportsApi.get(
+				`/nfl/scores/json/Standings/${season.data}?key=${NFL_API_KEY_}`
 			);
-			let standings = standingRes.data;
+			let standings = standingsRes.data;
 			standings.forEach((item) => {
 				for (let i = 0; i < nflLogos.length; i++) {
 					if (item.Team === nflLogos[i].key) {
@@ -116,7 +116,7 @@ export const getNFLStandings = createAsyncThunk(
 		} catch (err) {
 			if (err.response.data.Code === 401) {
 				const retryRes = await sportsApi.get(
-					`/nfl/scores/json/Standings/${seasonRes.data - 1}?key=${NFL_API_KEY_}`
+					`/nfl/scores/json/Standings/${season.data - 1}?key=${NFL_API_KEY_}`
 				);
 				let retry = retryRes.data;
 				retry.forEach((item) => {

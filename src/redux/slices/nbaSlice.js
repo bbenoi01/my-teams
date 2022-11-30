@@ -5,6 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import { PURGE } from 'redux-persist';
 import { NBA_API_KEY_ } from '@env';
+import { nbaLogos } from '../../data';
 import sportsApi from '../../api/sportsApi';
 
 export const getNBATeams = createAsyncThunk(
@@ -56,18 +57,37 @@ export const getNBATeamStats = createAsyncThunk(
 			const season = await sportsApi.get(
 				`/nba/scores/json/CurrentSeason?key=${NBA_API_KEY_}`
 			);
-			const res = await sportsApi.get(
+			const statRes = await sportsApi.get(
 				`/nba/scores/json/TeamSeasonStats/${season.data.Season}?key=${NBA_API_KEY_}`
 			);
-			return res.data;
+			let stats = statRes.data;
+			stats.forEach((item) => {
+				for (let i = 0; i < nbaLogos.length; i++) {
+					if (item.Team === nbaLogos[i].key) {
+						item.Logo = nbaLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return stats;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
-				const retry = await sportsApi.get(
+				const retryRes = await sportsApi.get(
 					`/nba/scores/json/TeamSeasonStats/${
 						season.data.Season - 1
 					}?key=${NBA_API_KEY_}`
 				);
-				return { code: err.response.data.Code, retryRes: retry.data };
+				let retry = retryRes.data;
+				retry.forEach((item) => {
+					for (let i = 0; i < nbaLogos.length; i++) {
+						if (item.Team === nbaLogos[i].key) {
+							item.Logo = nbaLogos[i].logoUrl;
+						} else {
+							item.Logo = require('../../../assets/nbaLogos/smile.jpg');
+						}
+					}
+				});
+				return { code: err.response.data.Code, retryRes: retry };
 			} else {
 				return rejectWithValue(err.response.data);
 			}
@@ -82,18 +102,37 @@ export const getNBAStandings = createAsyncThunk(
 			const season = await sportsApi.get(
 				`/nba/scores/json/CurrentSeason?key=${NBA_API_KEY_}`
 			);
-			const res = await sportsApi.get(
+			const standingsRes = await sportsApi.get(
 				`/nba/scores/json/Standings/${season.data.Season}?key=${NBA_API_KEY_}`
 			);
-			return res.data;
+			let standings = standingsRes.data;
+			standings.forEach((item) => {
+				for (let i = 0; i < nbaLogos.length; i++) {
+					if (item.Key === nbaLogos[i].key) {
+						item.Logo = nbaLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return standings;
 		} catch (err) {
 			if (err.response.data.Code === 401) {
-				const retry = await sportsApi.get(
+				const retryRes = await sportsApi.get(
 					`/nba/scores/json/Standings/${
 						season.data.Season - 1
 					}?key=${NBA_API_KEY_}`
 				);
-				return { code: err.response.data.Code, retryRes: retry.data };
+				let retry = retryRes.data;
+				retry.forEach((item) => {
+					for (let i = 0; i < nbaLogos.length; i++) {
+						if (item.Team === nbaLogos[i].key) {
+							item.Logo = nbaLogos[i].logoUrl;
+						} else {
+							item.Logo = require('../../../assets/nbaLogos/smile.jpg');
+						}
+					}
+				});
+				return { code: err.response.data.Code, retryRes: retry };
 			} else {
 				return rejectWithValue(err.response.data);
 			}

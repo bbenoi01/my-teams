@@ -3,12 +3,9 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 const NBABlock = ({ dimensions, item }) => {
 	return (
 		<View style={[styles.block, dimensions]}>
-			<Image
-				style={styles.img}
-				source={{
-					uri: 'https://1000logos.net/wp-content/uploads/2016/11/Chicago-Bulls-Emblem.jpg',
-				}}
-			/>
+			<View style={styles.logoContainer}>
+				<Image style={styles.logo} source={item.Logo} />
+			</View>
 			<Text style={styles.txt}>{item.Name}</Text>
 			<View style={styles.statsContainer}>
 				<View style={styles.statWrapper}>
@@ -50,11 +47,18 @@ const styles = StyleSheet.create({
 		marginVertical: 10,
 		backgroundColor: '#232629',
 	},
-	img: {
-		width: 60,
-		height: 60,
-		borderRadius: 50,
-		borderWidth: 1,
+	logoContainer: {
+		width: 100,
+		height: 100,
+		borderRadius: 100,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'black',
+	},
+	logo: {
+		width: 75,
+		height: 75,
+		borderRadius: 100,
 	},
 	txt: {
 		color: '#94a1b2',
