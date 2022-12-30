@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-	Button,
+	Image,
 	FlatList,
 	StyleSheet,
 	Text,
@@ -15,28 +15,58 @@ import {
 	getNFLStandings,
 	getNFLSchedule,
 } from '../../../redux/slices/nflSlice';
-import { optionMap, nameMap, recordMap, byeMap } from '../../../util/helpers';
+import { optionMap, logoMap, recordMap, byeMap } from '../../../util/helpers';
+import { nflLogos } from '../../../data';
 import MapView from 'react-native-maps';
 import dayjs from 'dayjs';
 import FullScreen from '../../../components/FullScreen';
+import Loading from '../../../components/Loading';
 import Picker from '../../../components/Picker';
+import Button from '../../../components/Button';
 
 const FootballMainScreen = () => {
 	const { nflFav, nflFavKey } = useSelector((state) => state.hub);
 	const { schedule } = useSelector((state) => state.measure);
-	const { nflStandings, nflTeams, nflTeam, year, nflSchedule } = useSelector(
-		(state) => state.nfl
-	);
+	const { loading, nflStandings, nflTeams, nflTeam, year, nflSchedule } =
+		useSelector((state) => state.nfl);
 	const parentRef = useRef(null);
 	const childRef = useRef(null);
 	const dispatch = useDispatch();
 
 	const blockDimensions = {
 		width: schedule && schedule.width - 40,
-		height: schedule && schedule.height * 0.9,
+		height:
+			schedule && schedule.height > 510
+				? schedule.height * 0.9
+				: schedule.height * 0.85,
+	};
+
+	const logoContainerSize = {
+		width: schedule && schedule.height > 510 ? 80 : 65,
+		height: schedule && schedule.height > 510 ? 80 : 65,
+	};
+
+	const logo = {
+		width: schedule && schedule.height > 510 ? 75 : 60,
+	};
+
+	const scoreTxt = {
+		fontSize: schedule && schedule.height > 510 ? 25 : 20,
+		fontWeight: 'bold',
+	};
+
+	const centerTxt = {
+		fontSize: schedule && schedule.height > 510 ? 50 : 30,
+		fontWeight: 'bold',
 	};
 
 	let nflTeamOptions = [];
+
+	const handlePress = () => {
+		dispatch(getNFLSchedule(year));
+		dispatch(setYear(''));
+	};
+
 	if (nflTeams) {
 		optionMap(nflTeams, nflTeamOptions);
 	}
@@ -53,13 +83,17 @@ const FootballMainScreen = () => {
 				}
 			}
 		);
+	}, [schedule]);
+
+	useEffect(() => {
 		if (!nflStandings) {
 			dispatch(getNFLStandings());
 		}
-	}, [schedule, nflStandings]);
+	}, [nflStandings]);
 
 	return (
 		<FullScreen img={require('../../../../assets/nflBackground.jpg')}>
+			{loading && <Loading />}
 			<View style={styles.canvas} ref={parentRef}>
 				<View style={styles.header}>
 					<Text style={styles.txt}>Fav Team: {nflFav && nflFav}</Text>
@@ -79,15 +113,20 @@ const FootballMainScreen = () => {
 						</View>
 						<View style={styles.searchInput}>
 							<TextInput
+								style={styles.txtInput}
 								placeholder='Year'
+								placeholderTextColor='#94a1b2'
 								onChangeText={(text) => dispatch(setYear(text))}
 								keyboardType={'number-pad'}
+								value={year}
 							/>
 						</View>
 					</View>
 					<Button
-						title='Get Schedule'
-						onPress={() => dispatch(getNFLSchedule(year))}
+						btnStyle={styles.btn}
+						btnTxt='Get Schedule'
+						btnTxtStyle={styles.btnText}
+						onPress={handlePress}
 					/>
 				</View>
 				<View style={styles.listContainer} ref={childRef}>
@@ -112,28 +151,36 @@ const FootballMainScreen = () => {
 										{item.AwayTeam !== 'BYE' && (
 											<>
 												<View style={styles.score}>
-													<Text style={[styles.txt, styles.scoreTxt]}>
-														Away:
-													</Text>
-													<Text style={[styles.txt, styles.scoreTxt]}>
+													<View
+														style={[styles.logoContainer, logoContainerSize]}
+													>
+														<Image
+															style={logo}
+															resizeMethod='scale'
+															resizeMode='contain'
+															source={logoMap(item.AwayTeam, nflLogos)}
+														/>
+													</View>
+													<Text style={[styles.txt, scoreTxt]}>
 														{item.AwayScore ? item.AwayScore : 'TBD'}
-													</Text>
-													<Text style={[styles.txt, styles.scoreTxt]}>
-														{nameMap(item.AwayTeam, nflTeams)}
 													</Text>
 												</View>
 												<View style={styles.centerContainer}>
-													<Text style={[styles.txt, styles.centerTxt]}>@</Text>
+													<Text style={[styles.txt, centerTxt]}>@</Text>
 												</View>
 												<View style={styles.score}>
-													<Text style={[styles.txt, styles.scoreTxt]}>
-														Home:
-													</Text>
-													<Text style={[styles.txt, styles.scoreTxt]}>
+													<View
+														style={[styles.logoContainer, logoContainerSize]}
+													>
+														<Image
+															style={logo}
+															resizeMethod='scale'
+															resizeMode='contain'
+															source={logoMap(item.HomeTeam, nflLogos)}
+														/>
+													</View>
+													<Text style={[styles.txt, scoreTxt]}>
 														{item.HomeScore ? item.HomeScore : 'TBD'}
-													</Text>
-													<Text style={[styles.txt, styles.scoreTxt]}>
-														{nameMap(item.HomeTeam, nflTeams)}
 													</Text>
 												</View>
 											</>
@@ -203,22 +250,34 @@ const styles = StyleSheet.create({
 	searchContainer: {
 		height: 100,
 		backgroundColor: '#242629e8',
-		justifyContent: 'center',
+		justifyContent: 'space-evenly',
 	},
 	searchInputContainer: {
 		flexDirection: 'row',
-		marginBottom: 10,
+		alignItems: 'center',
 	},
 	searchInput: {
 		width: '50%',
 	},
+	txtInput: {
+		backgroundColor: 'rgba(0, 0, 0, 0.801)',
+		color: 'whitesmoke',
+		width: '90%',
+		height: 30,
+		borderRadius: 20,
+		textAlign: 'center',
+	},
+	btn: {
+		backgroundColor: 'dodgerblue',
+		width: 150,
+		alignSelf: 'center',
+	},
+	btnText: {
+		fontWeight: 'bold',
+	},
 	listContainer: {
 		flex: 1,
-		// padding: 10,
-		// borderWidth: 1,
-		// borderColor: 'indigo',
 	},
-
 	block: {
 		alignSelf: 'center',
 		backgroundColor: '#242629e8',
@@ -227,56 +286,40 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: '#94a1b2',
 	},
-
 	blockTxt: {
 		fontWeight: 'bold',
 	},
-
 	weekContainer: {
 		padding: 5,
 		alignItems: 'center',
 		borderBottomWidth: 2,
 		borderBottomColor: 'rgb(148,161,178)',
 	},
-
 	dateContainer: {
-		// padding: 5,
-		// justifyContent: 'center',
 		alignItems: 'center',
 		marginVertical: 5,
-		// borderWidth: 1,
-		// borderColor: 'green',
 	},
-
 	scoreContainer: {
 		flexDirection: 'row',
 		justifyContent: 'space-around',
 		marginVertical: 5,
 	},
-
 	score: {
 		flex: 5,
-		height: 75,
 		justifyContent: 'space-between',
 		alignItems: 'center',
 	},
-
-	scoreTxt: {
-		fontSize: 16,
-		fontWeight: 'bold',
+	logoContainer: {
+		borderRadius: 100,
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginBottom: 10,
 	},
-
 	centerContainer: {
 		flex: 2,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
-
-	centerTxt: {
-		fontSize: 25,
-		fontWeight: 'bold',
-	},
-
 	forcastContainer: {
 		padding: 5,
 		alignItems: 'center',
@@ -284,9 +327,7 @@ const styles = StyleSheet.create({
 		borderTopWidth: 2,
 		borderTopColor: 'rgb(148,161,178)',
 	},
-
 	mapContainer: {
 		flex: 1,
-		// marginTop: 5,
 	},
 });

@@ -38,7 +38,7 @@
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
     "expo-web-browser": "~11.0.0",
-    "expo-linking": "~3.2.2",
+    "expo-linking": "~3.2.4",
     "react-native-maps": "0.31.1",
     "react-native-svg": "12.3.0"
   },

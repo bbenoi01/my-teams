@@ -28,6 +28,8 @@ const styles = StyleSheet.create({
 		height: '100%',
 		padding: 10,
 		backgroundColor: '#16161A',
+		borderWidth: 1,
+		borderColor: '#94a1b2',
 	},
 	tabTxt: {
 		color: '#94a1b2',

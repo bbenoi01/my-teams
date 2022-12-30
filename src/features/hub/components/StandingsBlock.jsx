@@ -4,7 +4,12 @@ const StandingsBlock = ({ item, dimensions }) => {
 	return (
 		<View style={[styles.block, dimensions]}>
 			<View style={styles.logoContainer}>
-				<Image style={styles.logo} source={item.Logo} resizeMode='contain' />
+				<Image
+					style={styles.logo}
+					source={item.Logo}
+					resizeMethod='scale'
+					resizeMode='contain'
+				/>
 			</View>
 			<View style={styles.wrapper}>
 				{item.City && <Text style={styles.txt}>{item.City} </Text>}
@@ -55,22 +60,22 @@ const styles = StyleSheet.create({
 		borderColor: '#94a1b2',
 		borderStyle: 'dotted',
 		borderRadius: 20,
-		padding: 20,
+		paddingBottom: 20,
+		paddingHorizontal: 20,
 		marginVertical: 10,
 		backgroundColor: '#232629',
 	},
 	logoContainer: {
-		width: 100,
-		height: 100,
+		width: 80,
+		height: 80,
 		borderRadius: 100,
-		borderWidth: 1,
+		// borderWidth: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: 'black',
+		// backgroundColor: 'black',
 	},
 	logo: {
-		width: 100,
-		borderRadius: 100,
+		width: 70,
 	},
 	txt: {
 		color: '#94a1b2',

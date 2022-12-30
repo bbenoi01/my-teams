@@ -7,7 +7,12 @@ const StatBLock = ({ dimensions, item }) => {
 	return (
 		<View style={[styles.block, dimensions]}>
 			<View style={styles.logoContainer}>
-				<Image style={styles.logo} source={item.Logo} resizeMode='contain' />
+				<Image
+					style={styles.logo}
+					source={item.Logo}
+					resizeMethod='scale'
+					resizeMode='contain'
+				/>
 			</View>
 			<Text style={styles.txt}>
 				{sport === 'nfl' ? item.TeamName : item.Name}
@@ -112,17 +117,16 @@ const styles = StyleSheet.create({
 		backgroundColor: '#232629',
 	},
 	logoContainer: {
-		width: 100,
-		height: 100,
+		width: 80,
+		height: 80,
 		borderRadius: 100,
+		// borderWidth: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: 'black',
-		// backgroundColor: '#FCFEFC',
+		// backgroundColor: 'black',
 	},
 	logo: {
-		width: 100,
-		borderRadius: 100,
+		width: 70,
 	},
 	txt: {
 		color: '#94a1b2',

@@ -16,6 +16,14 @@ export const nameMap = (key, arr) => {
 	}
 };
 
+export const logoMap = (team, arr) => {
+	for (let i = 0; i < arr.length; i++) {
+		if (team === arr[i].key) {
+			return arr[i].logoUrl;
+		}
+	}
+};
+
 export const recordMap = (key, arr) => {
 	for (let i = 0; i < arr.length; i++) {
 		if (key === arr[i].Team) {

@@ -1,20 +1,16 @@
-import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
-import { PURGE } from 'redux-persist';
-
-export const measurementAdapter = createEntityAdapter();
-const initialState = measurementAdapter.getInitialState({
-	loading: false,
-	tab: null,
-	stats: null,
-	player: null,
-	standings: null,
-	schedule: null,
-	errors: null,
-});
+import { createSlice } from '@reduxjs/toolkit';
 
 export const measurementSlice = createSlice({
 	name: 'measure',
-	initialState,
+	initialState: {
+		loading: false,
+		tab: null,
+		stats: null,
+		player: null,
+		standings: null,
+		schedule: null,
+		errors: null,
+	},
 	reducers: {
 		setTab: (state, action) => {
 			state.tab = action.payload;
@@ -40,22 +36,6 @@ export const measurementSlice = createSlice({
 			state.schedule = null;
 			state.errors = null;
 		},
-	},
-	extraReducers: (builder) => {
-		builder
-			.addCase(clearMeasureSlice, (state) => {
-				measurementAdapter.removeAll(state);
-			})
-			.addCase(PURGE, (state) => {
-				measurementAdapter.removeAll(state);
-				state.loading = false;
-				state.tab = null;
-				state.stats = null;
-				state.player = null;
-				state.standings = null;
-				state.schedule = null;
-				state.errors = null;
-			});
 	},
 });
 
