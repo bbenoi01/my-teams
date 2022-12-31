@@ -136,6 +136,26 @@ export const getNBAStandings = createAsyncThunk(
 	}
 );
 
+export const getNBASchedule = createAsyncThunk(
+	'nba/get_schedule',
+	async (scheduleData, { rejectWithValue }) => {
+		try {
+			const scheduleRes = await sportsApi.get(
+				`/nba/scores/json/Games/${scheduleData.year}?key=${NBA_API_KEY_}`
+			);
+			const schedule = scheduleRes.data.filter(
+				(item) =>
+					item.AwayTeam === scheduleData.team ||
+					item.HomeTeam === scheduleData.team
+			);
+
+			return schedule;
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
 export const nbaAdapter = createEntityAdapter();
 const initialState = nbaAdapter.getInitialState({
 	loading: false,
@@ -152,6 +172,9 @@ export const nbaSlice = createSlice({
 	name: 'nba',
 	initialState,
 	reducers: {
+		setNBATeam: (state, action) => {
+			state.nbaTeam = action.payload;
+		},
 		clearNBASlice: (state) => {
 			state.loading = false;
 			state.nbaTeams = null;
@@ -246,6 +269,6 @@ export const nbaSlice = createSlice({
 	},
 });
 
-export const { clearNBASlice } = nbaSlice.actions;
+export const { setNBATeam, clearNBASlice } = nbaSlice.actions;
 
 export default nbaSlice.reducer;

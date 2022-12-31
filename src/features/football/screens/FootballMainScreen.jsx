@@ -8,14 +8,19 @@ import {
 	TextInput,
 	View,
 } from 'react-native';
+import { setYear } from '../../../redux/slices/hubSlice';
 import { setSchedule } from '../../../redux/slices/measurementsSlice';
 import {
-	setYear,
 	setNFLTeam,
 	getNFLStandings,
 	getNFLSchedule,
 } from '../../../redux/slices/nflSlice';
-import { optionMap, logoMap, recordMap, byeMap } from '../../../util/helpers';
+import {
+	optionMap,
+	logoMap,
+	nflRecordMap,
+	byeMap,
+} from '../../../util/helpers';
 import { nflLogos } from '../../../data';
 import MapView from 'react-native-maps';
 import dayjs from 'dayjs';
@@ -60,16 +65,12 @@ const FootballMainScreen = () => {
 		fontWeight: 'bold',
 	};
 
-	let nflTeamOptions = [];
+	const teams = nflTeams && optionMap(nflTeams);
 
 	const handlePress = () => {
 		dispatch(getNFLSchedule(year));
 		dispatch(setYear(''));
 	};
-
-	if (nflTeams) {
-		optionMap(nflTeams, nflTeamOptions);
-	}
 
 	useEffect(() => {
 		childRef.current.measureLayout(
@@ -98,14 +99,14 @@ const FootballMainScreen = () => {
 				<View style={styles.header}>
 					<Text style={styles.txt}>Fav Team: {nflFav && nflFav}</Text>
 					<Text style={styles.txt}>
-						Current Record: {nflFavKey && recordMap(nflFavKey, nflStandings)}
+						Current Record: {nflFavKey && nflRecordMap(nflFavKey, nflStandings)}
 					</Text>
 				</View>
 				<View style={styles.searchContainer}>
 					<View style={styles.searchInputContainer}>
 						<View style={styles.searchInput}>
 							<Picker
-								options={nflTeamOptions}
+								options={teams}
 								onSelect={(e) =>
 									dispatch(setNFLTeam(e === null ? null : e.value))
 								}

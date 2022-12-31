@@ -152,6 +152,9 @@ export const mlbSlice = createSlice({
 	name: 'mlb',
 	initialState,
 	reducers: {
+		setMLBTeam: (state, action) => {
+			state.mlbTeam = action.payload;
+		},
 		clearMLBSlice: (state) => {
 			state.loading = false;
 			state.mlbTeams = false;
@@ -246,6 +249,6 @@ export const mlbSlice = createSlice({
 	},
 });
 
-export const { clearMLBSlice } = mlbSlice.actions;
+export const { setMLBTeam, clearMLBSlice } = mlbSlice.actions;
 
 export default mlbSlice.reducer;

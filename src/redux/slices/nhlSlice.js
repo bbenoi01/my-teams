@@ -152,6 +152,9 @@ export const nhlSlice = createSlice({
 	name: 'nhl',
 	initialState,
 	reducers: {
+		setNHLTeam: (state, action) => {
+			state.nhlTeam = action.payload;
+		},
 		clearNHLSlice: (state) => {
 			state.loading = false;
 			state.nhlTeams = null;
@@ -244,6 +247,6 @@ export const nhlSlice = createSlice({
 	},
 });
 
-export const { clearNHLSlice } = nhlSlice.actions;
+export const { setNHLTeam, clearNHLSlice } = nhlSlice.actions;
 
 export default nhlSlice.reducer;

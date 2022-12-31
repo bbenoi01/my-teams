@@ -10,6 +10,7 @@ const initialState = hubAdapter.getInitialState({
 	loading: false,
 	spread: false,
 	sport: null,
+	year: '',
 	nflFav: null,
 	nflFavKey: null,
 	nbaFav: null,
@@ -35,6 +36,9 @@ export const hubSlice = createSlice({
 		setSport: (state, action) => {
 			state.sport = action.payload;
 		},
+		setYear: (state, action) => {
+			state.year = action.payload;
+		},
 		setNFLFav: (state, action) => {
 			state.nflFav = action.payload.split(', ')[0];
 			state.nflFavKey = action.payload.split(', ')[1];
@@ -53,6 +57,7 @@ export const hubSlice = createSlice({
 		},
 		clearHubSlice: (state) => {
 			state.loading = false;
+			state.year = '';
 			state.nflFav = null;
 			state.nflFavKey = null;
 			state.nbaFav = null;
@@ -78,6 +83,7 @@ export const hubSlice = createSlice({
 				state.loading = false;
 				state.spread = false;
 				state.sport = null;
+				state.year = '';
 				state.nflFav = null;
 				state.nflFavKey = null;
 				state.nbaFav = null;
@@ -98,6 +104,7 @@ export const hubSlice = createSlice({
 export const {
 	setSpread,
 	setSport,
+	setYear,
 	setNFLFav,
 	setNBAFav,
 	setMLBFav,

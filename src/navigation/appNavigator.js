@@ -4,6 +4,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { HubNavigator } from './hubNavigator';
 import { TabNavigator } from './tabNavigator';
 import Topbar from '../components/Topbar';
+import SportScreen from '../features/schedules/screens/SportScreen';
 import SettingsScreen from '../features/settings/screens/SettingsScreen';
 
 const AppDrawer = createDrawerNavigator();
@@ -73,6 +74,7 @@ export const AppNavigator = () => {
 			screenOptions={createScreenOptions}
 		>
 			<AppDrawer.Screen name='Hub' component={HubNavigator} />
+			{/* <AppDrawer.Screen name='Schedules' component={SportScreen} /> */}
 			<AppDrawer.Screen name='Schedules' component={TabNavigator} />
 			<AppDrawer.Screen name='Settings' component={SettingsScreen} />
 		</AppDrawer.Navigator>

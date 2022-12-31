@@ -164,7 +164,6 @@ export const getNFLSchedule = createAsyncThunk(
 export const nflAdapter = createEntityAdapter();
 const initialState = nflAdapter.getInitialState({
 	loading: false,
-	year: '',
 	nflTeam: null,
 	nflTeams: null,
 	nflNews: null,
@@ -179,9 +178,6 @@ export const nflSlice = createSlice({
 	name: 'nfl',
 	initialState,
 	reducers: {
-		setYear: (state, action) => {
-			state.year = action.payload;
-		},
 		setNFLTeam: (state, action) => {
 			state.nflTeam = action.payload;
 		},
@@ -295,6 +291,6 @@ export const nflSlice = createSlice({
 	},
 });
 
-export const { setYear, setNFLTeam, clearNFLSlice } = nflSlice.actions;
+export const { setNFLTeam, clearNFLSlice } = nflSlice.actions;
 
 export default nflSlice.reducer;

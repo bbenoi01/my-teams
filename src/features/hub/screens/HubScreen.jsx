@@ -152,25 +152,13 @@ const HubScreen = ({ navigation }) => {
 		],
 	};
 
-	let nflTeamOptions = [];
-	if (nflTeams) {
-		optionMap(nflTeams, nflTeamOptions);
-	}
+	let nflTeamOptions = nflTeams && optionMap(nflTeams);
 
-	let nbaTeamOptions = [];
-	if (nbaTeams) {
-		optionMap(nbaTeams, nbaTeamOptions);
-	}
+	let nbaTeamOptions = nbaTeams && optionMap(nbaTeams);
 
-	let mlbTeamOptions = [];
-	if (mlbTeams) {
-		optionMap(mlbTeams, mlbTeamOptions);
-	}
+	let mlbTeamOptions = mlbTeams && optionMap(mlbTeams);
 
-	let nhlTeamOptions = [];
-	if (nhlTeams) {
-		optionMap(nhlTeams, nhlTeamOptions);
-	}
+	let nhlTeamOptions = nhlTeams && optionMap(nhlTeams);
 
 	useEffect(() => {
 		if (!nflTeams) {

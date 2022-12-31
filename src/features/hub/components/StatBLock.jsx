@@ -1,5 +1,5 @@
-import { useSelector } from 'react-redux';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
 const StatBLock = ({ dimensions, item }) => {
 	const { sport } = useSelector((state) => state.hub);

@@ -1,11 +1,12 @@
-export const optionMap = (arr, newArr) => {
+export const optionMap = (arr) => {
+	let teams = [];
 	arr.forEach((item) => {
-		newArr.push({
+		teams.push({
 			label: item.Name,
 			value: item.Name + ', ' + item.Key,
 		});
-		return newArr;
 	});
+	return teams;
 };
 
 export const nameMap = (key, arr) => {
@@ -24,10 +25,18 @@ export const logoMap = (team, arr) => {
 	}
 };
 
-export const recordMap = (key, arr) => {
+export const nflRecordMap = (key, arr) => {
 	for (let i = 0; i < arr.length; i++) {
 		if (key === arr[i].Team) {
 			return `${arr[i].Wins}-${arr[i].Losses}-${arr[i].Ties}`;
+		}
+	}
+};
+
+export const recordMap = (key, arr) => {
+	for (let i = 0; i < arr.length; i++) {
+		if (key === arr[i].Key) {
+			return `${arr[i].Wins}-${arr[i].Losses}`;
 		}
 	}
 };
