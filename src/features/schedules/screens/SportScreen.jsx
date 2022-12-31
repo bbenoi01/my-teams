@@ -3,7 +3,7 @@ import React from 'react';
 
 const SportScreen = () => {
 	return (
-		<View>
+		<View style={styles.canvas}>
 			<Text>SportScreen</Text>
 		</View>
 	);
@@ -11,4 +11,13 @@ const SportScreen = () => {
 
 export default SportScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	canvas: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#242629',
+		padding: 20,
+		position: 'relative',
+	},
+});
