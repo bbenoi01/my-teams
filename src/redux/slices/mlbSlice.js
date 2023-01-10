@@ -136,6 +136,53 @@ export const getMLBStandings = createAsyncThunk(
 	}
 );
 
+export const getAllMLB = createAsyncThunk(
+	'mlb/get_all',
+	async (team, { rejectWithValue }) => {
+		try {
+			const newsRes = await sportsApi.get(
+				`/mlb/scores/json/News?key=${MLB_API_KEY_}`
+			);
+			const playerRes = await sportsApi.get(
+				`/mlb/scores/json/Players/${team}?key=${MLB_API_KEY_}`
+			);
+			const seasonRes = await sportsApi.get(
+				`/mlb/scores/json/CurrentSeason?key=${MLB_API_KEY_}`
+			);
+			const season = seasonRes.data.Season;
+			const statRes = await sportsApi.get(
+				`/mlb/scores/json/TeamSeasonStats/${season}?key=${MLB_API_KEY_}`
+			);
+			const standingsRes = await sportsApi.get(
+				`/mlb/scores/json/Standings/${season}?key=${MLB_API_KEY_}`
+			);
+
+			const news = newsRes.data;
+			const players = playerRes.data;
+			let stats = statRes.data;
+			let standings = standingsRes.data;
+			stats.forEach((item) => {
+				for (let i = 0; i < mlbLogos.length; i++) {
+					if (item.Team === mlbLogos[i].key) {
+						item.Logo = mlbLogos[i].logoUrl;
+					}
+				}
+			});
+			standings.forEach((item) => {
+				for (let i = 0; i < mlbLogos.length; i++) {
+					if (item.Key === mlbLogos[i].key) {
+						item.Logo = mlbLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return { news, players, stats, standings };
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
 export const mlbAdapter = createEntityAdapter();
 const initialState = mlbAdapter.getInitialState({
 	loading: false,
@@ -145,6 +192,7 @@ const initialState = mlbAdapter.getInitialState({
 	mlbPlayers: null,
 	mlbStats: null,
 	mlbStandings: null,
+	mlbSchedule: [],
 	errors: null,
 });
 
@@ -156,8 +204,15 @@ export const mlbSlice = createSlice({
 			state.mlbTeam = action.payload;
 		},
 		clearMLBSlice: (state) => {
+			mlbAdapter.removeAll(state);
 			state.loading = false;
-			state.mlbTeams = false;
+			state.mlbTeam = null;
+			state.mlbTeams = null;
+			state.mlbNews = null;
+			state.mlbPlayers = null;
+			state.mlbStats = null;
+			state.mlbStandings = null;
+			state.errors = null;
 		},
 	},
 	extraReducers: (builder) => {
@@ -232,8 +287,20 @@ export const mlbSlice = createSlice({
 					state.errors = action.payload;
 				}
 			})
-			.addCase(clearMLBSlice, (state) => {
-				mlbAdapter.removeAll(state);
+			.addCase(getAllMLB.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getAllMLB.fulfilled, (state, action) => {
+				state.loading = false;
+				state.mlbNews = action.payload.news;
+				state.mlbPlayers = action.payload.players;
+				state.mlbStats = action.payload.stats;
+				state.mlbStandings = action.payload.standings;
+			})
+			.addCase(getAllMLB.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
 			})
 			.addCase(PURGE, (state) => {
 				mlbAdapter.removeAll(state);

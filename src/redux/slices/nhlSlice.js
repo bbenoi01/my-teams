@@ -136,6 +136,53 @@ export const getNHLStandings = createAsyncThunk(
 	}
 );
 
+export const getAllNHL = createAsyncThunk(
+	'nhl/get_all',
+	async (team, { rejectWithValue }) => {
+		try {
+			const newsRes = await sportsApi.get(
+				`/nhl/scores/json/News?key=${NHL_API_KEY_}`
+			);
+			const playerRes = await sportsApi.get(
+				`/nhl/scores/json/Players/${team}?key=${NHL_API_KEY_}`
+			);
+			const seasonRes = await sportsApi.get(
+				`/nhl/scores/json/CurrentSeason?key=${NHL_API_KEY_}`
+			);
+			const season = seasonRes.data.Season;
+			const statRes = await sportsApi.get(
+				`/nhl/scores/json/TeamSeasonStats/${season}?key=${NHL_API_KEY_}`
+			);
+			const standingsRes = await sportsApi.get(
+				`/nhl/scores/json/Standings/${season}?key=${NHL_API_KEY_}`
+			);
+
+			const news = newsRes.data;
+			const players = playerRes.data;
+			let stats = statRes.data;
+			let standings = standingsRes.data;
+			stats.forEach((item) => {
+				for (let i = 0; i < nhlLogos.length; i++) {
+					if (item.Team === nhlLogos[i].key) {
+						item.Logo = nhlLogos[i].logoUrl;
+					}
+				}
+			});
+			standings.forEach((item) => {
+				for (let i = 0; i < nhlLogos.length; i++) {
+					if (item.Key === nhlLogos[i].key) {
+						item.Logo = nhlLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return { news, players, stats, standings };
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
 export const nhlAdapter = createEntityAdapter();
 const initialState = nhlAdapter.getInitialState({
 	loading: false,
@@ -145,6 +192,7 @@ const initialState = nhlAdapter.getInitialState({
 	nhlPlayers: null,
 	nhlStats: null,
 	nhlStandings: null,
+	nhlSchedule: [],
 	errors: null,
 });
 
@@ -156,8 +204,15 @@ export const nhlSlice = createSlice({
 			state.nhlTeam = action.payload;
 		},
 		clearNHLSlice: (state) => {
+			nhlAdapter.removeAll(state);
 			state.loading = false;
+			state.nhlTeam = null;
 			state.nhlTeams = null;
+			state.nhlNews = null;
+			state.nhlPlayers = null;
+			state.nhlStats = null;
+			state.nhlStandings = null;
+			state.errors = null;
 		},
 	},
 	extraReducers: (builder) => {
@@ -230,8 +285,20 @@ export const nhlSlice = createSlice({
 					state.errors = action.payload;
 				}
 			})
-			.addCase(clearNHLSlice, (state) => {
-				nhlAdapter.removeAll(state);
+			.addCase(getAllNHL.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getAllNHL.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nhlNews = action.payload.news;
+				state.nhlPlayers = action.payload.players;
+				state.nhlStats = action.payload.stats;
+				state.nhlStandings = action.payload.standings;
+			})
+			.addCase(getAllNHL.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
 			})
 			.addCase(PURGE, (state) => {
 				nhlAdapter.removeAll(state);

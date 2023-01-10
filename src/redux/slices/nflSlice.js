@@ -134,6 +134,52 @@ export const getNFLStandings = createAsyncThunk(
 	}
 );
 
+export const getAllNFL = createAsyncThunk(
+	'nfl/get_all',
+	async (team, { rejectWithValue }) => {
+		try {
+			const newsRes = await sportsApi.get(
+				`/nfl/scores/json/News?key=${NFL_API_KEY_}`
+			);
+			const playerRes = await sportsApi.get(
+				`/nfl/scores/json/Players/${team}?key=${NFL_API_KEY_}`
+			);
+			const season = await sportsApi.get(
+				`/nfl/scores/json/CurrentSeason?key=${NFL_API_KEY_}`
+			);
+			const statRes = await sportsApi.get(
+				`/nfl/scores/json/TeamSeasonStats/${season.data}?key=${NFL_API_KEY_}`
+			);
+			const standingsRes = await sportsApi.get(
+				`/nfl/scores/json/Standings/${season.data}?key=${NFL_API_KEY_}`
+			);
+
+			const news = newsRes.data;
+			const players = playerRes.data;
+			let stats = statRes.data;
+			let standings = standingsRes.data;
+			stats.forEach((item) => {
+				for (let i = 0; i < nflLogos.length; i++) {
+					if (item.Team === nflLogos[i].key) {
+						item.Logo = nflLogos[i].logoUrl;
+					}
+				}
+			});
+			standings.forEach((item) => {
+				for (let i = 0; i < nflLogos.length; i++) {
+					if (item.Team === nflLogos[i].key) {
+						item.Logo = nflLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return { news, players, stats, standings };
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
 export const getNFLSchedule = createAsyncThunk(
 	'nfl/get_schedule',
 	async (year, { rejectWithValue }) => {
@@ -182,9 +228,16 @@ export const nflSlice = createSlice({
 			state.nflTeam = action.payload;
 		},
 		clearNFLSlice: (state) => {
+			nflAdapter.removeAll(state);
 			state.loading = false;
+			state.nflTeam = null;
 			state.nflTeams = null;
+			state.nflNews = null;
+			state.nflPlayers = null;
+			state.nflStats = null;
+			state.nflStandings = null;
 			state.nflSchedule = [];
+			state.errors = null;
 		},
 	},
 	extraReducers: (builder) => {
@@ -257,6 +310,21 @@ export const nflSlice = createSlice({
 					state.errors = action.payload;
 				}
 			})
+			.addCase(getAllNFL.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getAllNFL.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nflNews = action.payload.news;
+				state.nflPlayers = action.payload.players;
+				state.nflStats = action.payload.stats;
+				state.nflStandings = action.payload.standings;
+			})
+			.addCase(getAllNFL.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
+			})
 			.addCase(getNFLSchedule.pending, (state) => {
 				state.loading = true;
 				state.errors = null;
@@ -272,9 +340,6 @@ export const nflSlice = createSlice({
 			.addCase(getNFLSchedule.rejected, (state, action) => {
 				state.loading = false;
 				state.errors = action.payload;
-			})
-			.addCase(clearNFLSlice, (state) => {
-				nflAdapter.removeAll(state);
 			})
 			.addCase(PURGE, (state) => {
 				nflAdapter.removeAll(state);

@@ -2,34 +2,10 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { StyleSheet, Text, View } from 'react-native';
 import { Surface } from 'react-native-paper';
-import {
-	getNFLTeams,
-	getNFLNews,
-	getNFLFavTeamPlayers,
-	getNFLTeamStats,
-	getNFLStandings,
-} from '../../../redux/slices/nflSlice';
-import {
-	getNBATeams,
-	getNBANews,
-	getNBAFavTeamPlayers,
-	getNBATeamStats,
-	getNBAStandings,
-} from '../../../redux/slices/nbaSlice';
-import {
-	getMLBTeams,
-	getMLBNews,
-	getMLBFavTeamPlayers,
-	getMLBTeamStats,
-	getMLBStandings,
-} from '../../../redux/slices/mlbSlice';
-import {
-	getNHLTeams,
-	getNHLNews,
-	getNHLFavTeamPlayers,
-	getNHLTeamStats,
-	getNHLStandings,
-} from '../../../redux/slices/nhlSlice';
+import { getNFLTeams, getAllNFL } from '../../../redux/slices/nflSlice';
+import { getNBATeams, getAllNBA } from '../../../redux/slices/nbaSlice';
+import { getMLBTeams, getAllMLB } from '../../../redux/slices/mlbSlice';
+import { getNHLTeams, getAllNHL } from '../../../redux/slices/nhlSlice';
 import {
 	setSpread,
 	setSport,
@@ -79,37 +55,33 @@ const HubScreen = ({ navigation }) => {
 	let childRef = useRef(null);
 	const loading =
 		hubLoading || nflLoading || nbaLoading || mlbLoading || nhlLoading;
-
+	const defaultOption = [{ label: 'No Options', value: null }];
 	const dispatch = useDispatch();
 
 	const handleQuadPress = (sport) => {
 		switch (sport) {
 			case 'nfl':
-				!nflNews && dispatch(getNFLNews());
-				!nflPlayers && dispatch(getNFLFavTeamPlayers(nflFavKey));
-				!nflStats && dispatch(getNFLTeamStats(nflTeams));
-				!nflStandings && dispatch(getNFLStandings(nflTeams));
+				if (!nflNews || !nflPlayers || !nflStats || !nflStandings) {
+					dispatch(getAllNFL(nflFavKey));
+				}
 				break;
 
 			case 'nba':
-				!nbaNews && dispatch(getNBANews());
-				!nbaPlayers && dispatch(getNBAFavTeamPlayers(nbaFavKey));
-				!nbaStats && dispatch(getNBATeamStats());
-				!nbaStandings && dispatch(getNBAStandings());
+				if (!nbaNews || !nbaPlayers || !nbaStats || !nbaStandings) {
+					dispatch(getAllNBA(nbaFavKey));
+				}
 				break;
 
 			case 'mlb':
-				!mlbNews && dispatch(getMLBNews());
-				!mlbPlayers && dispatch(getMLBFavTeamPlayers(mlbFavKey));
-				!mlbStats && dispatch(getMLBTeamStats());
-				!mlbStandings && dispatch(getMLBStandings());
+				if (!mlbNews || !mlbPlayers || !mlbStats || !mlbStandings) {
+					dispatch(getAllMLB(mlbFavKey));
+				}
 				break;
 
 			case 'nhl':
-				!nhlNews && dispatch(getNHLNews());
-				!nhlPlayers && dispatch(getNHLFavTeamPlayers(nhlFavKey));
-				!nhlStats && dispatch(getNHLTeamStats());
-				!nhlStandings && dispatch(getNHLStandings());
+				if (!nhlNews || !nhlPlayers || !nhlStats || !nhlStandings) {
+					dispatch(getAllNHL(nhlFavKey));
+				}
 				break;
 
 			default:
@@ -152,13 +124,13 @@ const HubScreen = ({ navigation }) => {
 		],
 	};
 
-	let nflTeamOptions = nflTeams && optionMap(nflTeams);
+	let nflTeamOptions = nflTeams ? optionMap(nflTeams) : defaultOption;
 
-	let nbaTeamOptions = nbaTeams && optionMap(nbaTeams);
+	let nbaTeamOptions = nbaTeams ? optionMap(nbaTeams) : defaultOption;
 
-	let mlbTeamOptions = mlbTeams && optionMap(mlbTeams);
+	let mlbTeamOptions = mlbTeams ? optionMap(mlbTeams) : defaultOption;
 
-	let nhlTeamOptions = nhlTeams && optionMap(nhlTeams);
+	let nhlTeamOptions = nhlTeams ? optionMap(nhlTeams) : defaultOption;
 
 	useEffect(() => {
 		if (!nflTeams) {

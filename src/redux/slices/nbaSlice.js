@@ -136,6 +136,52 @@ export const getNBAStandings = createAsyncThunk(
 	}
 );
 
+export const getAllNBA = createAsyncThunk(
+	'nba/get_all',
+	async (team, { rejectWithValue }) => {
+		try {
+			const newsRes = await sportsApi.get(
+				`/nba/scores/json/News?key=${NBA_API_KEY_}`
+			);
+			const playerRes = await sportsApi.get(
+				`/nba/scores/json/Players/${team}?key=${NBA_API_KEY_}`
+			);
+			const season = await sportsApi.get(
+				`/nba/scores/json/CurrentSeason?key=${NBA_API_KEY_}`
+			);
+			const statRes = await sportsApi.get(
+				`/nba/scores/json/TeamSeasonStats/${season.data.Season}?key=${NBA_API_KEY_}`
+			);
+			const standingsRes = await sportsApi.get(
+				`/nba/scores/json/Standings/${season.data.Season}?key=${NBA_API_KEY_}`
+			);
+
+			const news = newsRes.data;
+			const players = playerRes.data;
+			let stats = statRes.data;
+			let standings = standingsRes.data;
+			stats.forEach((item) => {
+				for (let i = 0; i < nbaLogos.length; i++) {
+					if (item.Team === nbaLogos[i].key) {
+						item.Logo = nbaLogos[i].logoUrl;
+					}
+				}
+			});
+			standings.forEach((item) => {
+				for (let i = 0; i < nbaLogos.length; i++) {
+					if (item.Key === nbaLogos[i].key) {
+						item.Logo = nbaLogos[i].logoUrl;
+					}
+				}
+			});
+
+			return { news, players, stats, standings };
+		} catch (err) {
+			return rejectWithValue(err.response.data);
+		}
+	}
+);
+
 export const getNBASchedule = createAsyncThunk(
 	'nba/get_schedule',
 	async (scheduleData, { rejectWithValue }) => {
@@ -165,6 +211,7 @@ const initialState = nbaAdapter.getInitialState({
 	nbaPlayers: null,
 	nbaStats: null,
 	nbaStandings: null,
+	nbaSchedule: [],
 	errors: null,
 });
 
@@ -176,8 +223,15 @@ export const nbaSlice = createSlice({
 			state.nbaTeam = action.payload;
 		},
 		clearNBASlice: (state) => {
+			nbaAdapter.removeAll(state);
 			state.loading = false;
+			state.nbaTeam = null;
 			state.nbaTeams = null;
+			state.nbaNews = null;
+			state.nbaPlayers = null;
+			state.nbaStats = null;
+			state.nbaStandings = null;
+			state.errors = null;
 		},
 	},
 	extraReducers: (builder) => {
@@ -252,8 +306,20 @@ export const nbaSlice = createSlice({
 					state.errors = action.payload;
 				}
 			})
-			.addCase(clearNBASlice, (state) => {
-				nbaAdapter.removeAll(state);
+			.addCase(getAllNBA.pending, (state) => {
+				state.loading = true;
+				state.errors = null;
+			})
+			.addCase(getAllNBA.fulfilled, (state, action) => {
+				state.loading = false;
+				state.nbaNews = action.payload.news;
+				state.nbaPlayers = action.payload.players;
+				state.nbaStats = action.payload.stats;
+				state.nbaStandings = action.payload.standings;
+			})
+			.addCase(getAllNBA.rejected, (state, action) => {
+				state.loading = false;
+				state.errors = action.payload;
 			})
 			.addCase(PURGE, (state) => {
 				nbaAdapter.removeAll(state);

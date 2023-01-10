@@ -1,7 +1,13 @@
 import { useDispatch } from 'react-redux';
 import { StyleSheet, View } from 'react-native';
 import { persistor } from '../../../redux/rootStore';
-import { clearHubSlice } from '../../../redux/slices/hubSlice';
+import {
+	clearFavs,
+	resetNFL,
+	resetNBA,
+	resetMLB,
+	resetNHL,
+} from '../../../redux/slices/hubSlice';
 import { clearNFLSlice } from '../../../redux/slices/nflSlice';
 import { clearNBASlice } from '../../../redux/slices/nbaSlice';
 import { clearMLBSlice } from '../../../redux/slices/mlbSlice';
@@ -18,22 +24,26 @@ const SettingsScreen = () => {
 	const resetSport = (sport) => {
 		switch (sport) {
 			case 'favs':
-				dispatch(clearHubSlice());
+				dispatch(clearFavs());
 				break;
 
 			case 'nfl':
+				dispatch(resetNFL());
 				dispatch(clearNFLSlice());
 				break;
 
 			case 'nba':
+				dispatch(resetNBA());
 				dispatch(clearNBASlice());
 				break;
 
 			case 'mlb':
+				dispatch(resetMLB());
 				dispatch(clearMLBSlice());
 				break;
 
 			case 'nhl':
+				dispatch(resetNHL());
 				dispatch(clearNHLSlice());
 				break;
 

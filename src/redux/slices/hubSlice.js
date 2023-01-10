@@ -43,17 +43,43 @@ export const hubSlice = createSlice({
 			state.nflFav = action.payload.split(', ')[0];
 			state.nflFavKey = action.payload.split(', ')[1];
 		},
+		resetNFL: (state) => {
+			state.nflFav = null;
+			state.nflFavKey = null;
+		},
 		setNBAFav: (state, action) => {
 			state.nbaFav = action.payload.split(', ')[0];
 			state.nbaFavKey = action.payload.split(', ')[1];
+		},
+		resetNBA: (state) => {
+			state.nbaFav = null;
+			state.nbaFavKey = null;
 		},
 		setMLBFav: (state, action) => {
 			state.mlbFav = action.payload.split(', ')[0];
 			state.mlbFavKey = action.payload.split(', ')[1];
 		},
+		resetMLB: (state) => {
+			state.mlbFav = null;
+			state.mlbFavKey = null;
+		},
 		setNHLFav: (state, action) => {
 			state.nhlFav = action.payload.split(', ')[0];
 			state.nhlFavKey = action.payload.split(', ')[1];
+		},
+		resetNHL: (state) => {
+			state.nhlFav = null;
+			state.nhlFavKey = null;
+		},
+		clearFavs: (state) => {
+			state.nflFav = null;
+			state.nflFavKey = null;
+			state.nbaFav = null;
+			state.nbaFavKey = null;
+			state.mlbFav = null;
+			state.mlbFavKey = null;
+			state.nhlFav = null;
+			state.nhlFavKey = null;
 		},
 		clearHubSlice: (state) => {
 			state.loading = false;
@@ -106,9 +132,14 @@ export const {
 	setSport,
 	setYear,
 	setNFLFav,
+	resetNFL,
 	setNBAFav,
+	resetNBA,
 	setMLBFav,
+	resetMLB,
 	setNHLFav,
+	resetNHL,
+	clearFavs,
 	clearHubSlice,
 } = hubSlice.actions;
 
